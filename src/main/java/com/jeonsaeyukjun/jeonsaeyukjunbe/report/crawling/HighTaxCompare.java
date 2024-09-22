@@ -51,41 +51,14 @@ public class HighTaxCompare {
         // 여러 페이지에서 크롤링한 이름을 가져옴
         List<String> taxDelinquentNames = getTaxDelinquentNamesFromPages(totalPages);
 
-        // 크롤링한 이름을 출력
-        for (String name : taxDelinquentNames) {
-            System.out.println("Tax Delinquent Name: " + name);
+        List<String> dbNames = DatabaseHelper.getNamesFromDatabase();
+        for (String dbName : dbNames) {
+            boolean exists = taxDelinquentNames.contains(dbName);
+            if (exists) {
+                System.out.println(dbName + " 고액체납자 목록에 있음");
+            }else {
+                System.out.println(dbName + " 고액체납자 목록에 없음");
+            }
         }
     }
 }
-//        List<String> taxDelinquents = getTaxDelinquentNames();
-//
-//        // 크롤링한 데이터의 크기 출력
-//        System.out.println("크롤링한 데이터 수: " + taxDelinquents.size());
-//
-//        // 크롤링한 데이터가 있으면 출력
-//        if (taxDelinquents.isEmpty()) {
-//            System.out.println("크롤링된 데이터가 없습니다.");
-//        } else {
-//            for (String name : taxDelinquents) {
-//                System.out.println("Tax Delinquent: " + name);
-//            }
-//        }
-//        // 1. DB에서 임대인 이름 목록을 가져옴
-//        List<String> dbNames = DatabaseHelper.getNamesFromDatabase();
-//
-//        // 2. 크롤링을 통해 체납자 목록 가져옴
-//        List<String> taxDelinquents = getTaxDelinquentNames();
-//
-//        // 3. 체납자 목록과 DB 임대인 이름 비교
-//        for (String dbName : dbNames) {
-//            if (taxDelinquents.contains(dbName)) {
-//                System.out.println(dbName + "는 체납자 목록에 있음");
-//            } else {
-//                System.out.println(dbName + "는 체납자 목록에 없음");
-//            }
-//        }
-//        for (String name : taxDelinquents) {
-//            System.out.println("Tax Delinquent: " + name);
-//        }
-
-
