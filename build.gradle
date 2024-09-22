@@ -1,6 +1,10 @@
 plugins {
   id 'java'
   id 'war'
+  id 'application'
+}
+application {
+  mainClass = 'com.jeonsaeyukjun.jeonsaeyukjunbe.report.crawling.HighTaxCompare' // 정확한 클래스 경로로 수정
 }
 
 group 'com.jeonsaeyukjun'
@@ -23,6 +27,19 @@ tasks.withType(JavaCompile) {
 
 dependencies {
   compileOnly('javax.servlet:javax.servlet-api:4.0.1')
+
+// JSoup for web scraping
+  implementation 'org.jsoup:jsoup:1.15.4'
+
+  // MySQL JDBC driver
+  implementation 'mysql:mysql-connector-java:8.0.33'
+
+  // Jackson for JSON parsing (필요 시 사용)
+  implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.1'
+
+  // 테스트 프레임워크 (필요 시 추가)
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
   implementation ("org.springframework:spring-context:5.3.37")
           { exclude group: 'commons-logging', module: 'commons-logging' }
@@ -69,6 +86,16 @@ dependencies {
   // AOP
   implementation 'org.aspectj:aspectjrt:1.9.20'
   implementation 'org.aspectj:aspectjweaver:1.9.20'
+
+  // Selenium Java 라이브러리
+  implementation 'org.seleniumhq.selenium:selenium-java:4.4.0'
+
+  // WebDriver Manager (브라우저 드라이버 자동 관리)
+  implementation 'io.github.bonigarcia:webdrivermanager:5.3.2'
+
+  // 테스트를 위한 JUnit (선택 사항)
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 }
 
 test {
