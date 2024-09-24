@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class nowPriceInquiryService {
 
-    public static double getNowPrice(String legalCode, String buildingType, String address, double buildingArea) {
-        double nowPrice = 0.0;
+    public static Long getNowPrice(String legalCode, String buildingType, String address, double buildingArea) {
+        Long nowPrice = 0L;
         try {
             int type = buildingType.equals("apartment") ? 1 : 2;
             String apiUrl = "https://api.kbland.kr/land-price/price/fastPriceInfo?%EB%B2%95%EC%A0%95%EB%8F%99%EC%BD%94%EB%93%9C="
@@ -51,7 +51,7 @@ public class nowPriceInquiryService {
                         double averagePrice = sale.getDouble("일반평균");
 
                         if (addressFromApi.equals(address) && buildingArea == sale.getDouble("전용면적")) {
-                            nowPrice = averagePrice;
+                            nowPrice = (long) Math.floor(averagePrice * 10000);
                             break;
                         }
                     }
