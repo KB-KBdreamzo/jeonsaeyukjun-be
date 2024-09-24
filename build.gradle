@@ -105,6 +105,9 @@ dependencies {
   // 텍스트 추출
   implementation 'org.apache.pdfbox:pdfbox:2.0.24'
   implementation 'commons-fileupload:commons-fileupload:1.4'
+
+  // 부동산 시세 조회
+  implementation 'org.json:json:20210307'
 }
 
 test {
