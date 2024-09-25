@@ -4,7 +4,7 @@ plugins {
   id 'application'
 }
 application {
-  mainClass = 'com.jeonsaeyukjun.jeonsaeyukjunbe.report.crawling.HighTaxCompare' // 정확한 클래스 경로로 수정
+  mainClass = 'com.jeonsaeyukjun.jeonsaeyukjunbe.report.crawling.AddHighTaxCompare'
 }
 
 group 'com.jeonsaeyukjun'
