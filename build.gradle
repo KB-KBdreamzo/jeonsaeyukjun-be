@@ -1,10 +1,16 @@
 plugins {
   id 'java'
   id 'war'
+
+  id 'org.springframework.boot' version '2.7.5' // 원하는 Spring Boot 버전으로 설정
+  id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
 group 'com.jeonsaeyukjun'
 version '1.0-SNAPSHOT'
+
+sourceCompatibility = '17' // 사용 중인 JDK 버전으로 설정
+targetCompatibility = '17'
 
 repositories {
   mavenCentral()
@@ -24,9 +30,13 @@ tasks.withType(JavaCompile) {
 dependencies {
   compileOnly('javax.servlet:javax.servlet-api:4.0.1')
 
+  // Spring Boot Starter로 Spring 관련 의존성 관리
+  implementation 'org.springframework.boot:spring-boot-starter-web'
+
   implementation ("org.springframework:spring-context:5.3.37")
           { exclude group: 'commons-logging', module: 'commons-logging' }
   implementation "org.springframework:spring-webmvc:5.3.37"
+  implementation 'org.springframework:spring-web:5.3.37' // 추가
   implementation 'javax.inject:javax.inject:1'
 
   //el과 jstl사용시 필요한 모듈 [필요없다면 삭제]
@@ -69,6 +79,23 @@ dependencies {
   // AOP
   implementation 'org.aspectj:aspectjrt:1.9.20'
   implementation 'org.aspectj:aspectjweaver:1.9.20'
+
+  // PDF 처리 라이브러리
+  implementation 'org.apache.pdfbox:pdfbox:2.0.24' // 최신 버전으로 업데이트
+  // iText 7
+  implementation 'com.itextpdf:itext7-core:7.2.4' // 최신 버전으로 설정하세요
+  implementation 'com.itextpdf:layout:7.2.4'
+  implementation 'com.itextpdf:io:7.2.4'
+  implementation 'org.springframework.boot:spring-boot-starter'
+
+  // logback 및 slf4j 의존성
+  implementation 'ch.qos.logback:logback-classic:1.2.11' // 1.4.x 대신 1.2.x 버전으로 다운그레이드
+  implementation 'org.slf4j:slf4j-api:1.7.36' // SLF4J도 안정적인 1.7.x 버전 사용
+
+  // logback-classic 추가 시, spring-boot-starter-logging 제외
+  implementation ("org.springframework.boot:spring-boot-starter-web") {
+    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+  }
 }
 
 test {
