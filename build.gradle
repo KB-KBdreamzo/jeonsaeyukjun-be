@@ -66,7 +66,9 @@ dependencies {
   annotationProcessor 'org.projectlombok:lombok:1.18.28'
 
   //Restful api 서버 구축에 필요한 라이브러리 -> 자바 객체 json 변환
+  // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.17.2'
+  // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
   implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.17.2'
 
   //mybatis & mysql
@@ -76,6 +78,7 @@ dependencies {
   runtimeOnly 'mysql:mysql-connector-java:8.0.26'
 
   //DBconnection pool -- 디비를 연결했다가 읽고 쓰고 연결끊고
+  // https://mvnrepository.com/artifact/org.apache.commons/commons-dbcp2
   implementation group: 'org.apache.commons', name: 'commons-dbcp2', version: '2.12.0'
   // 히카리 -> 자바 11부터 지원
   implementation group: 'com.zaxxer', name: 'HikariCP', version: '5.1.0'
@@ -104,6 +107,18 @@ dependencies {
   // 테스트를 위한 JUnit (선택 사항)
   testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+
+  // 텍스트 추출
+  implementation 'org.apache.pdfbox:pdfbox:2.0.24'
+  implementation 'commons-fileupload:commons-fileupload:1.4'
+
+  // 부동산 시세 조회
+  implementation 'org.json:json:20210307'
+
+  // Selenium WebDriver
+  implementation 'org.seleniumhq.selenium:selenium-java:4.25.0'
+  // 필요에 따라 ChromeDriver도 추가
+  implementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.25.0'
 }
 
 test {

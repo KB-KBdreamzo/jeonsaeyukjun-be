@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 @Service
-public class nowPriceInquiryService {
+public class NowPriceService {
 
     public static Long getNowPrice(String legalCode, String buildingType, String address, double buildingArea) {
         Long nowPrice = 0L;
