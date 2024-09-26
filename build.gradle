@@ -44,8 +44,16 @@ dependencies {
   implementation 'javax.servlet:jstl:1.2'
 
   //로깅을 위해 logback & slf4j -> 바꿔도 됨
-  implementation 'ch.qos.logback:logback-classic:1.4.1'
-  implementation 'org.slf4j:slf4j-api:2.0.3'
+  //implementation 'ch.qos.logback:logback-classic:1.4.1'
+  //implementation 'org.slf4j:slf4j-api:2.0.3'
+  // logback 및 slf4j 의존성
+  implementation 'ch.qos.logback:logback-classic:1.2.11' // 1.4.x 대신 1.2.x 버전으로 다운그레이드
+  implementation 'org.slf4j:slf4j-api:1.7.36' // SLF4J도 안정적인 1.7.x 버전 사용
+
+  // logback-classic 추가 시, spring-boot-starter-logging 제외
+  implementation ("org.springframework.boot:spring-boot-starter-web") {
+      exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+  }
 
   // xml내 한글 처리
   implementation 'xerces:xercesImpl:2.12.2'
@@ -82,20 +90,8 @@ dependencies {
 
   // PDF 처리 라이브러리
   implementation 'org.apache.pdfbox:pdfbox:2.0.24' // 최신 버전으로 업데이트
-  // iText 7
-  implementation 'com.itextpdf:itext7-core:7.2.4' // 최신 버전으로 설정하세요
-  implementation 'com.itextpdf:layout:7.2.4'
-  implementation 'com.itextpdf:io:7.2.4'
+
   implementation 'org.springframework.boot:spring-boot-starter'
-
-  // logback 및 slf4j 의존성
-  implementation 'ch.qos.logback:logback-classic:1.2.11' // 1.4.x 대신 1.2.x 버전으로 다운그레이드
-  implementation 'org.slf4j:slf4j-api:1.7.36' // SLF4J도 안정적인 1.7.x 버전 사용
-
-  // logback-classic 추가 시, spring-boot-starter-logging 제외
-  implementation ("org.springframework.boot:spring-boot-starter-web") {
-    exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-  }
 }
 
 test {
