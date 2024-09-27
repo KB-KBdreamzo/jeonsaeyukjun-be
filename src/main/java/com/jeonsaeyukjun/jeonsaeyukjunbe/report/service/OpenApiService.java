@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,10 +18,10 @@ public class OpenApiService {
         Long nowPrice = -1L;
 
         try {
-            // 빌딩 타입에 맞게 매칭 (아파트,오피스텔만 가능)
+            // 빌딩 타입에 맞게 매칭 (아파트,오피스텔만 가능 -> 개선 필요)
             int type = buildingType.equals("apartment") ? 1 : 2;
 
-            // 인코딩 때문인거 같은데.. 왜이래
+            // 인코딩 때문인거 같은데yo.. 해결 부탁
             String apiUrl = "https://api.kbland.kr/land-price/price/fastPriceInfo?%EB%B2%95%EC%A0%95%EB%8F%99%EC%BD%94%EB%93%9C="
                     + URLEncoder.encode(String.valueOf(legalCode), "UTF-8")
                     + "&%EC%9C%A0%ED%98%95=" + URLEncoder.encode(String.valueOf(type), "UTF-8")
@@ -31,40 +32,23 @@ public class OpenApiService {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            System.out.println(">>>>" + connection);
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                // API 응답 읽기
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine;
-                StringBuilder response = new StringBuilder();
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
 
-                // JSON 파싱
-                JSONObject jsonResponse = new JSONObject(response.toString());
-                JSONObject dataBody = jsonResponse.getJSONObject("dataBody");
-                JSONArray dataArray = dataBody.getJSONArray("data");
-                System.out.println(dataArray);
+                JSONArray dataArray = getResponse(connection);
 
                 for (int i = 0; i < dataArray.length(); i++) {
                     JSONObject dataObject = dataArray.getJSONObject(i);
                     String apiAddress = dataObject.getString("주소");
 
                     if (apiAddress.equals(jbAddress)) {
-                        // 주소가 일치하면, "매매" 데이터를 확인
                         JSONArray saleArray = dataObject.getJSONArray("매매");
 
                         for (int j = 0; j < saleArray.length(); j++) {
                             JSONObject saleObject = saleArray.getJSONObject(j);
-                            double contractArea = saleObject.getDouble("전용면적");
-
-                            // 입력된 건물 면적과 응답 데이터의 면적을 비교하여 매칭
-                            if (contractArea == buildingArea) {  // 면적이 같을 때
-                                nowPrice = saleObject.getLong("일반평균");
-                                return nowPrice; // 매칭되는 값을 찾으면 반환
+                            double contractArea = saleArray.getJSONObject(j).getDouble("전용면적");
+                            if (contractArea == buildingArea) {
+                                return saleObject.getLong("일반평균") * 10000;
                             }
                         }
                     }
@@ -77,5 +61,20 @@ public class OpenApiService {
         }
 
         return nowPrice;
+    }
+
+    private static JSONArray getResponse(HttpURLConnection connection) throws IOException {
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine;
+        StringBuilder response = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            response.append(inputLine);
+        }
+        in.close();
+
+        JSONObject jsonResponse = new JSONObject(response.toString());
+        JSONObject dataBody = jsonResponse.getJSONObject("dataBody");
+        JSONArray dataArray = dataBody.getJSONArray("data");
+        return dataArray;
     }
 }

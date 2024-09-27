@@ -5,6 +5,8 @@ import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.stream.Stream;
+
 @Service
 @RequiredArgsConstructor
 public class ReportService {
@@ -13,34 +15,51 @@ public class ReportService {
     private final OpenApiService openApiService;
 
     public ReportResponseDto addReport(RegisterDto registerDto, Long legalCode, String jbAddress, Long deposit) {
-        ReportResponseDto reportResponseDto = new ReportResponseDto();
 
-        // 경매 건수 판단 로직
 
-        // 추정시세
-        // 선순위 채권액
-        // 환불가능보증금이 있는지 여부만 나타내자 (안전리포트에 필요하니까)
         Long nowPrice = openApiService.getNowPrice(jbAddress, legalCode, registerDto.getBuildingType(), registerDto.getBuildingArea());
         double salePriceRatio = crawlingService.getSalePriceRatio(jbAddress, registerDto.getBuildingType());
 
-        // 환불 가능 보증금 (전세금 < 시세 * 낙찰가율 - 선순위 채권액) 이어야 환불 가능
-        // 추정시세 * 0.7 > 전세금  이어야 깡통전세 (80프로인가 70프로인가 암튼 그럼)
-
-
-
-        System.out.println(nowPrice + " " + salePriceRatio);
         boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getRoadName());
         boolean rentalFraud = crawlingService.getRentalFraud(registerDto.getLessorName(), registerDto.getRoadName());
-        System.out.println(rentalFraud + " " + highTaxDelinquent);
 
-        reportResponseDto.setRegisterDto(registerDto);
-        reportResponseDto.setDeposit(String.valueOf(deposit));
-        reportResponseDto.setScore("58");
+        int safetyScore = caculateSafetyScore(registerDto, deposit, nowPrice, salePriceRatio);
+
+        ReportResponseDto reportResponseDto = new ReportResponseDto();
+        reportResponseDto.setDeposit(deposit);
         reportResponseDto.setJbAddress(jbAddress);
+        reportResponseDto.setLegalCode(legalCode);
+        reportResponseDto.setSafetyScore(safetyScore);
+        reportResponseDto.setNowPrice(nowPrice);
+        reportResponseDto.setSalePriceRatio(salePriceRatio);
         reportResponseDto.setHighTaxDelinquent(highTaxDelinquent);
         reportResponseDto.setRentalFraud(rentalFraud);
-        reportResponseDto.setLegalCode(String.valueOf(legalCode));
-        return reportResponseDto;
+        reportResponseDto.setRegisterDto(registerDto);
+
+        return new ReportResponseDto( deposit, jbAddress, legalCode, safetyScore, nowPrice, salePriceRatio, highTaxDelinquent, rentalFraud, registerDto);
+    }
+
+    private static int caculateSafetyScore(RegisterDto registerDto, Long deposit, Long nowPrice, double salePriceRatio) {
+        int safetyScore = 0;
+        // 환불 가능할 때 25점 (예측 손실액 0) 시세 * 낙찰가율 - 선순위 채권액 > 전세금
+        if (nowPrice * salePriceRatio - registerDto.getPriorityDeposit() > deposit) safetyScore += 25;
+
+        // 깡통전세 아닐 경우 10점 (추정시세 * 0.7 > 전세금)
+        if (nowPrice * 0.7 > deposit) safetyScore += 10;
+
+        safetyScore += (int) Stream.of(
+                        registerDto.isAuctionRecord(),
+                                registerDto.isInjuctionRecord(),
+                                registerDto.isTrustRegistrationRecord(),
+                                registerDto.isRedemptionRecord(),
+                                registerDto.isRegistrationRecord(),
+                                registerDto.getSeizureCount() > 0,
+                                registerDto.getProvisionalSeizureCount() > 0,
+                                registerDto.getLeaseholdRegistrationCount() > 0,
+                                registerDto.getMortgageCount() > 0
+                        ).filter(Boolean::booleanValue)
+                        .count() * 5;
+        return safetyScore;
     }
 
     public ReportResponseDto fetchReport(int reportId) {

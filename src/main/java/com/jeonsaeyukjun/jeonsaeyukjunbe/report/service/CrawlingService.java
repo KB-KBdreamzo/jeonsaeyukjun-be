@@ -13,14 +13,25 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CrawlingService {
-        // WebDriver를 한번만 생성하고 재사용
         private WebDriver driver;
 
-        // 생성자에서 WebDriver 초기화
+    private static final Map<String, String> BUILDING_TYPE_MAP = Map.of(
+            "아파트", "아파트",
+            "단독주택", "단독주택",
+            "다가구주택", "다가구주택",
+            "연립주택", "연립주택",
+            "다세대", "다세대",
+            "상가", "상가",
+            "오피스텔", "오피스텔",
+            "근린시설", "근린시설"
+    );
+
         public CrawlingService() {
+            // 드라이버 맞게 고쳐야함
             System.setProperty("webdriver.chrome.driver", "/Users/yundabin/Downloads/chromedriver-mac-x64/chromedriver");
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.addArguments("--remote-allow-origins=*");
@@ -29,47 +40,57 @@ public class CrawlingService {
         }
 
         public double getSalePriceRatio(String address, String buildingType) {
-            double salePriceRatio = 0.0;
+            double ratio = -1.0;
 
             try {
                 driver.get("https://www.courtauction.go.kr/RealUtilMaeTong.laf");
 
-                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-
-                WebElement locationRadioButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("idBubwLocGubun2")));
+                WebElement locationRadioButton = driver.findElement(By.id("idBubwLocGubun2"));
                 locationRadioButton.click();
 
                 String city = address.split(" ")[0];
                 String district = address.split(" ")[1];
 
-                WebElement sidoSelectElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("idSidoCode")));
-                Select sidoSelect = new Select(sidoSelectElement);
-                sidoSelect.selectByVisibleText(city);
-
-                WebElement siguSelectElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("idSiguCode")));
-                Select siguSelect = new Select(siguSelectElement);
-                siguSelect.selectByVisibleText(district);
-
-                WebElement searchButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//img[@alt='검색']")));
+                selectDropdownOption(By.id("idSidoCode"), city);
+                selectDropdownOption(By.id("idSiguCode"), district);
+                WebElement searchButton = driver.findElement(By.xpath("//img[@alt='검색']"));
                 searchButton.click();
 
-                if ("apartment".equalsIgnoreCase(buildingType)) {
-                    WebElement apartmentPriceRatio = driver.findElement(By.xpath("//table//tr[td[contains(text(),'아파트')]]/td[last()]"));
-                    String apartmentRatioText = apartmentPriceRatio.getText().replace("%", "");
-                    salePriceRatio = Double.parseDouble(apartmentRatioText.trim());
-                    System.out.println("아파트 매각가율: " + salePriceRatio);
-                } else {
-                    WebElement officetelPriceRatio = driver.findElement(By.xpath("//table//tr[td[contains(text(),'오피스텔')]]/td[last()]"));
-                    String officetelRatioText = officetelPriceRatio.getText().replace("%", "");
-                    salePriceRatio = Double.parseDouble(officetelRatioText.trim());
-                    System.out.println("오피스텔 매각가율: " + salePriceRatio);
-                }
+                String type = BUILDING_TYPE_MAP.keySet().stream()
+                        .filter(buildingType::contains)
+                        .findFirst()
+                        .map(BUILDING_TYPE_MAP::get)
+                        .orElse("?");
+                if (type.equals("?")) return ratio;
+
+                return extractPriceRatio(type);
 
             } catch (Exception e) {
                 e.printStackTrace();
+                return ratio;
             }
+        }
 
-            return salePriceRatio;
+        private void selectDropdownOption(By selector, String visibleText) {
+            WebElement searchTypeDropdown = driver.findElement(selector);
+            Select searchTypeSelect = new Select(searchTypeDropdown);
+            searchTypeSelect.selectByVisibleText(visibleText);
+        }
+
+        private double extractPriceRatio(String type) {
+            WebElement resultsTable = driver.findElement(By.tagName("tbody"));
+            List<WebElement> rows = resultsTable.findElements(By.tagName("tr"));
+
+            for (WebElement row : rows) {
+                List<WebElement> tds = row.findElements(By.tagName("td"));
+                int tdCount = tds.size();
+
+                String targetType = (tdCount == 7) ? tds.get(0).getText() : tds.get(1).getText();
+                if (targetType.equals(type)) {
+                    return Double.parseDouble(tds.get(tdCount-1).getText().replace("%", "").trim());
+                }
+            }
+            return -1.0;
         }
 
         public boolean getHighTaxDelinquent(String name, String address) {
@@ -80,9 +101,7 @@ public class CrawlingService {
             try {
                 driver.get("https://www.nts.go.kr/nts/ad/openInfo/selectList.do?tcd=2");
 
-                WebElement searchTypeDropdown = driver.findElement(By.name("searchType"));
-                Select searchTypeSelect = new Select(searchTypeDropdown);
-                searchTypeSelect.selectByVisibleText("성명");
+                selectDropdownOption(By.name("searchType"), "성명");
 
                 WebElement searchBox = driver.findElement(By.name("searchValue"));
                 searchBox.sendKeys(name);
@@ -91,6 +110,7 @@ public class CrawlingService {
                 searchButton.click();
 
                 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+
                 WebElement resultsTable = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("tbody")));
                 List<WebElement> rows = resultsTable.findElements(By.tagName("tr"));
 
