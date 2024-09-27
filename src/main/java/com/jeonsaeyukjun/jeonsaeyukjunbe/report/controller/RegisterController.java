@@ -1,5 +1,6 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.report.controller;
 
+import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RegisterDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.report.service.RegisterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,14 +19,14 @@ public class RegisterController {
     private final RegisterService registerService;
 
     @PostMapping("/upload-pdf")
-    public ResponseEntity<Map<String, Object>> uploadRegisterFile(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<RegisterDto> uploadRegisterFile(@RequestParam("file") MultipartFile file) {
         try {
-            Map<String, Object> analysisResult = registerService.processPdf(file);
+            RegisterDto analysisResult = registerService.processPdf(file);
             return new ResponseEntity<>(analysisResult, HttpStatus.OK);
         } catch (Exception e) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("message", e.getMessage());
-            return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
