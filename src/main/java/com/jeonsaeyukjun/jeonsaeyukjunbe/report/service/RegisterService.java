@@ -20,35 +20,17 @@ public class RegisterService {
     public RegisterDto processPdf(MultipartFile file) throws IOException {
 
         String extractedText = extractTextFromPdf(file);
-
         StringBuilder[] sections = splitSections(extractedText);
 
         Map<String, Object> analysisResult = new HashMap<>();
-        analysisResult.putAll(openAiService.textToJsonWithOpenAI(sections[0], "표제부"));
-        analysisResult.putAll(openAiService.textToJsonWithOpenAI(sections[1], "갑구"));
-        analysisResult.putAll(openAiService.textToJsonWithOpenAI(sections[2], "을구"));
+        String[] sectionNames = {"표제부", "갑구", "을구"};
 
-        return new RegisterDto(
-                (String) analysisResult.get("lessorName"),
-                (String) analysisResult.get("roadName"),
-                (String) analysisResult.get("detailAddress"),
-                (String) analysisResult.get("landType"),
-                (Double) analysisResult.get("landArea"),
-                (String) analysisResult.get("buildingType"),
-                (Double) analysisResult.get("buildingArea"),
-                (Boolean) analysisResult.get("auctionRecord"),
-                (Boolean) analysisResult.get("injuctionRecord"),
-                (Boolean) analysisResult.get("trustRegistrationRecord"),
-                (Boolean) analysisResult.get("redemptionRecord"),
-                (Boolean) analysisResult.get("registrationRecord"),
-                Integer.parseInt(analysisResult.get("seizureCount").toString()),
-                Integer.parseInt(analysisResult.get("provisionalSeizureCount").toString()),
-                Long.parseLong(analysisResult.get("priorityDeposit").toString()),
-                Integer.parseInt(analysisResult.get("leaseholdRegistrationCount").toString()),
-                Integer.parseInt(analysisResult.get("mortgageCount").toString())
-        );
+        for (int i = 0; i < sections.length; i++) {
+            analysisResult.putAll(openAiService.textToJsonWithOpenAI(sections[i], sectionNames[i]));
+        }
+
+        return addRegisterDto(analysisResult);
     }
-
 
     private String extractTextFromPdf(MultipartFile file) throws IOException {
         PDDocument document = PDDocument.load(file.getInputStream());
@@ -82,5 +64,27 @@ public class RegisterService {
         }
 
         return sections;
+    }
+
+    private static RegisterDto addRegisterDto(Map<String, Object> analysisResult) {
+        return new RegisterDto(
+                (String) analysisResult.get("lessorName"),
+                (String) analysisResult.get("roadName"),
+                (String) analysisResult.get("detailAddress"),
+                (String) analysisResult.get("landType"),
+                (Double) analysisResult.get("landArea"),
+                (String) analysisResult.get("buildingType"),
+                (Double) analysisResult.get("buildingArea"),
+                (Boolean) analysisResult.get("auctionRecord"),
+                (Boolean) analysisResult.get("injuctionRecord"),
+                (Boolean) analysisResult.get("trustRegistrationRecord"),
+                (Boolean) analysisResult.get("redemptionRecord"),
+                (Boolean) analysisResult.get("registrationRecord"),
+                Integer.parseInt(analysisResult.get("seizureCount").toString()),
+                Integer.parseInt(analysisResult.get("provisionalSeizureCount").toString()),
+                Long.parseLong(analysisResult.get("priorityDeposit").toString()),
+                Integer.parseInt(analysisResult.get("leaseholdRegistrationCount").toString()),
+                Integer.parseInt(analysisResult.get("mortgageCount").toString())
+        );
     }
 }

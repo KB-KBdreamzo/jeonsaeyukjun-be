@@ -12,7 +12,7 @@ public class RegisterDto {
     // 토지 관련
     private String landType;
     private double landArea;
-    private String buildingType;
+    private String buildingType;                 // 단지형다세대
     private double buildingArea;
 
     private boolean auctionRecord;               // 경매 기록 여부
