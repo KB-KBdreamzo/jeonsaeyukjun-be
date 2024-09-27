@@ -10,13 +10,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import javax.sql.DataSource;
 import java.io.IOException;
 
 @Configuration
+@PropertySource("classpath:application.properties")
 @MapperScan(basePackages = {"com.jeonsaeyukjun.jeonsaeyukjunbe.**.mapper.**"})
 public class AppConfig {
 
@@ -66,5 +69,10 @@ public class AppConfig {
         multipartResolver.setMaxUploadSize(10485760); // 10MB
         multipartResolver.setDefaultEncoding("UTF-8");
         return multipartResolver;
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }
