@@ -3,6 +3,7 @@ package com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto;
 import lombok.*;
 
 @Data
+@NoArgsConstructor  // 기본 생성자 추가
 @AllArgsConstructor
 public class RegisterDto {
     private String lessorName;                   // 임대인 이름

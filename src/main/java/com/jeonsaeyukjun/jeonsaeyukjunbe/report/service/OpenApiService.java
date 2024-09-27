@@ -30,6 +30,7 @@ public class OpenApiService {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
+            System.out.println(">>>>" + connection);
             int responseCode = connection.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
 
