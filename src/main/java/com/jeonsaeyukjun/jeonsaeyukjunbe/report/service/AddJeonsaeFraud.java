@@ -19,13 +19,13 @@ public class AddJeonsaeFraud {
 
     private static final Logger logger = LogManager.getLogger(AddJeonsaeFraud.class);
 
-    public static List<String> getAllTaxDelinquentNames() {
+    public static List<String> getAllTaxDelinquentNamesAndAddresses() {
         System.setProperty("webdriver.chrome.driver", "/Users/jangbongjun/Desktop/KbDreamZo/jeonsaeyukjun-be/src/main/java/com/jeonsaeyukjun/jeonsaeyukjunbe/report/chromedriver");
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--remote-allow-origins=*");
         chromeOptions.addArguments("--headless");
         WebDriver driver = new ChromeDriver(chromeOptions);
-        List<String> allNames = new ArrayList<>();
+        List<String> allDetails = new ArrayList<>();
 
         try {
             int curPage = 1;
@@ -42,22 +42,23 @@ public class AddJeonsaeFraud {
                 List<WebElement> rows = driver.findElements(By.cssSelector("tr"));
                 System.out.println("페이지에서 로드된 row 수: " + rows.size());
 
-
                 if (rows.isEmpty()) {
                     System.out.println("페이지에 데이터가 없습니다. 크롤링을 종료합니다.");
                     break;
                 }
 
-                allNames.addAll(
+                allDetails.addAll(
                         rows.stream()
                                 .map(row -> row.findElements(By.tagName("td")))
-                                .filter(columns -> columns.size() > 0)
+                                .filter(columns -> columns.size() > 1)
                                 .map(columns -> {
                                     String name = columns.get(0).getText();
-                                    System.out.println("Extracted Name: " + name);
-                                    return name;
+                                    String address = columns.get(2).getText();
+                                    String detail = "이름: " + name + ", 주소: " + address;
+                                    System.out.println("추출된 데이터: " + detail);
+                                    return detail;
                                 })
-                                .filter(name -> !name.trim().isEmpty())
+                                .filter(detail -> !detail.trim().isEmpty())
                                 .collect(Collectors.toList())
                 );
 
@@ -67,20 +68,19 @@ public class AddJeonsaeFraud {
             }
 
         } catch (Exception e) {
-            logger.error("Error while crawling tax delinquent names: ", e);
+            logger.error("세금 체납자 이름 및 주소를 크롤링하는 중 오류 발생: ", e);
         } finally {
             driver.quit();
         }
 
-        return allNames;
+        return allDetails;
     }
 
     public static void main(String[] args) {
-        List<String> taxDelinquentNames = getAllTaxDelinquentNames();
-        for (String taxDelinquentName : taxDelinquentNames) {
-            System.out.println("taxDelinquentName = " + taxDelinquentName);
+        List<String> taxDelinquentDetails = getAllTaxDelinquentNamesAndAddresses();
+        for (String detail : taxDelinquentDetails) {
+            System.out.println("체납자 정보 = " + detail);
         }
     }
 
 }
-
