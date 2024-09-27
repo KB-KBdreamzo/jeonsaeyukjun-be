@@ -21,7 +21,6 @@ public class OpenApiService {
             // 빌딩 타입에 맞게 매칭 (아파트,오피스텔만 가능 -> 개선 필요)
             int type = buildingType.equals("apartment") ? 1 : 2;
 
-            // 인코딩 때문인거 같은데yo.. 해결 부탁
             String apiUrl = "https://api.kbland.kr/land-price/price/fastPriceInfo?%EB%B2%95%EC%A0%95%EB%8F%99%EC%BD%94%EB%93%9C="
                     + URLEncoder.encode(String.valueOf(legalCode), "UTF-8")
                     + "&%EC%9C%A0%ED%98%95=" + URLEncoder.encode(String.valueOf(type), "UTF-8")
