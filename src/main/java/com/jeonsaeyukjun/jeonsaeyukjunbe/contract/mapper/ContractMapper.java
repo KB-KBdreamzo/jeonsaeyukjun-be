@@ -1,3 +1,16 @@
+//package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper;
+//
+//import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDTO;
+//import org.apache.ibatis.annotations.Mapper;
+//
+//import java.util.Map;
+//
+//@Mapper
+//public interface ContractMapper {
+//    Map<String, String> mapToTemplate(ContractDTO dto);
+//}
+
+
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper;
 
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDTO;
