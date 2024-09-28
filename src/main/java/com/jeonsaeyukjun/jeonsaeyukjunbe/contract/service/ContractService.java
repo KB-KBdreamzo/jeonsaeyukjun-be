@@ -22,6 +22,10 @@ public class ContractService {
 
     private final ContractMapper contractMapper;
 
+    public Map<String, String> createContractTemplate(ContractDTO dto) {
+        return contractMapper.mapToTemplate(dto);
+    }
+
     // 생성자: ContractMapper를 주입받아 초기화
     public ContractService(ContractMapper contractMapper) {
         this.contractMapper = contractMapper;
