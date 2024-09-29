@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class ReportResponseDto {
     private long deposit;
     private String jbAddress;
-    private long legalCode; // 행정동코드임!
+    private String legalCode;
 
     private int safetyScore;
     private long nowPrice;

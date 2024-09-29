@@ -6,19 +6,17 @@ import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportRequestDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.report.service.RegisterService;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/report")
-public class RegisterController {
+public class ReportController {
 
     private final RegisterService registerService;
     private final ReportService reportService;
@@ -27,11 +25,11 @@ public class RegisterController {
     public ResponseEntity<?> createReport(@RequestBody ReportRequestDto reportRequest) {
         try {
             Long deposit = reportRequest.getDeposit();
-            Long legalCode = reportRequest.getLegalCode();
+            String legalCode = reportRequest.getLegalCode();
             String jbAddress = reportRequest.getJbAddress();
             RegisterDto registerDto = reportRequest.getRegisterDto();
 
-            ReportResponseDto report = reportService.addReport(registerDto, legalCode, jbAddress, deposit) ;
+            ReportResponseDto report = reportService.generateReport(registerDto, legalCode, jbAddress, deposit) ;
 
             return ResponseEntity.ok(report);
         } catch (Exception e) {

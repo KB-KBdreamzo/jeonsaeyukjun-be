@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.report.mapper.PropertyAddressMapper">
+    <select id="fetchPropertyAddress" parameterType="PropertyAddressDto" resultType="PropertyAddressDto">
+        SELECT road_name, detail_address, legal_code
+        FROM Property_Address
+        WHERE road_name = #{roadName} AND detail_address = #{detailAddress}
+    </select>
+
+    <insert id="addPropertyAddress" parameterType="PropertyAddressDto">
+        INSERT INTO Property_Address (road_name, detail_address, legal_code)
+        VALUES (#{roadName}, #{detailAddress}, #{legalCode})
+    </insert>
+
+</mapper>

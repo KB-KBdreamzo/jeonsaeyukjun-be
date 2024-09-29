@@ -1,7 +1,7 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.report.service;
 
-import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RegisterDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportResponseDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.*;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.report.mapper.ReportMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,30 +13,41 @@ public class ReportService {
 
     private final CrawlingService crawlingService;
     private final OpenApiService openApiService;
+    private final PropertyAddressService propertyAddressService;
 
-    public ReportResponseDto addReport(RegisterDto registerDto, String legalCode, String jbAddress, Long deposit) {
+    private final ReportMapper reportMapper;
 
+    public ReportResponseDto generateReport
+            (RegisterDto registerDto, String legalCode, String jbAddress, Long deposit) {
 
         Long nowPrice = openApiService.getNowPrice(jbAddress, legalCode, registerDto.getBuildingType(), registerDto.getBuildingArea());
         double salePriceRatio = crawlingService.getSalePriceRatio(jbAddress, registerDto.getBuildingType());
 
-        boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getLessorBirth());
         boolean rentalFraud = crawlingService.getRentalFraud(registerDto.getLessorName(), registerDto.getLessorBirth());
+        boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getLessorBirth());
 
         int safetyScore = caculateSafetyScore(registerDto, deposit, nowPrice, salePriceRatio);
 
-        ReportResponseDto reportResponseDto = new ReportResponseDto();
-        reportResponseDto.setDeposit(deposit);
-        reportResponseDto.setJbAddress(jbAddress);
-        reportResponseDto.setLegalCode(legalCode);
-        reportResponseDto.setSafetyScore(safetyScore);
-        reportResponseDto.setNowPrice(nowPrice);
-        reportResponseDto.setSalePriceRatio(salePriceRatio);
-        reportResponseDto.setHighTaxDelinquent(highTaxDelinquent);
-        reportResponseDto.setRentalFraud(rentalFraud);
-        reportResponseDto.setRegisterDto(registerDto);
+        // registerDto의 도로명 주소 및 상세주소로 주소 테이블에 있/없 확인
+        String roadName = registerDto.getRoadName();
+        String detailAddress = registerDto.getDetailAddress();
+        PropertyAddressDto propertyAddressDto = new PropertyAddressDto(roadName, detailAddress, legalCode);
+        propertyAddressService.addPropertyAddressDto(propertyAddressDto);
 
-        return new ReportResponseDto( deposit, jbAddress, legalCode, safetyScore, nowPrice, salePriceRatio, highTaxDelinquent, rentalFraud, registerDto);
+        // 주소랑 연결된 리포트 저장 => 이때 report의 id를 받아오게 지정!
+        ReportDto resultReport = new ReportDto();
+        resultReport.setUserId(1);  // 사용자는 다르게 넣어야하는거 알지
+        resultReport.setRoadName(roadName); resultReport.setDetailAddress(detailAddress); resultReport.setSafetyScore(safetyScore);
+        resultReport.setLessorName(registerDto.getLessorName()); resultReport.setDeposit(resultReport.getDeposit());
+        reportMapper.addReport(resultReport);
+
+        reportMapper.addBuildingInfo(new BuildingInfoDto(resultReport.getReportId(), registerDto.getLandType(),registerDto.getLandArea(), registerDto.getBuildingType(), registerDto.getBuildingArea(), registerDto.getArea()));
+        reportMapper.addLandlordIncident(new LandlordIncidentDto(resultReport.getReportId(), rentalFraud, highTaxDelinquent));
+        reportMapper.addMoney(new MoneyDto(resultReport.getReportId(), salePriceRatio, nowPrice));
+        reportMapper.addOwnershipInfo(new OwnershipInfoDto(resultReport.getReportId(), registerDto.isAuctionRecord(), registerDto.isInjuctionRecord(), registerDto.isTrustRegistrationRecord(), registerDto.isRedemptionRecord(), registerDto.isRegistrationRecord(), registerDto.getSeizureCount(), registerDto.getProvisionalSeizureCount()));
+        reportMapper.addRightInfo(new RightInfoDto(resultReport.getReportId(),  registerDto.getPriorityDeposit(), registerDto.getMortgageCount(), registerDto.getLeaseholdRegistrationCount()));
+
+        return new ReportResponseDto(deposit, jbAddress, legalCode, safetyScore, nowPrice, salePriceRatio, highTaxDelinquent, rentalFraud, registerDto);
     }
 
     private static int caculateSafetyScore(RegisterDto registerDto, Long deposit, Long nowPrice, double salePriceRatio) {

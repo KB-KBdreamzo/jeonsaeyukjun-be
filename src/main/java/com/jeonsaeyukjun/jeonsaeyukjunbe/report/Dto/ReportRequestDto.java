@@ -6,6 +6,6 @@ import lombok.Data;
 public class ReportRequestDto {
     private long deposit;
     private String jbAddress;
-    private String legalCode; // 행정동코드임!
+    private String legalCode;
     private RegisterDto registerDto;
 }

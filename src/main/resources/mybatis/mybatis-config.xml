@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE configuration
-        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
-    <settings>
-        <setting name="mapUnderscoreToCamelCase" value="true" />
-    </settings>
     <typeAliases>
-        <package  name="com.jeonsaeyukjun.jeonsaeyukjunbe.map.dto"/>
+        <typeAlias alias="PropertyAddressDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.PropertyAddressDto"/>
+        <typeAlias alias="ReportDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportDto"/>
+        <typeAlias alias="BuildingInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.BuildingInfoDto"/>
+        <typeAlias alias="LandlordIncidentDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.LandlordIncidentDto"/>
+        <typeAlias alias="MoneyDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.MoneyDto"/>
+        <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.OwnershipInfoDto"/>
+        <typeAlias alias="RightInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RightInfoDto"/>
     </typeAliases>
 </configuration>

@@ -50,7 +50,7 @@ public class OpenAiService {
         return switch (type){
             case "표제부" -> """
                     roadName(도로명주소를 찾아서 String)\
-                    detailAddress (상세주소는 [집합 건물] 옆에 쓰인 내용 전체를 (예로 #층 #동 #호같은 내용) 찾아서 String
+                    detailAddress (상세주소는 [집합 건물] 옆에 쓰인 내용 전체를 지번주소 제외하고 (예로 #층 #동 #호같은 내용) 찾아서 String
                     buildingType(건물용도는 건물 내역에 부분 값을 아파트, 단독주택, 다세대주택, 연립주택, 다세대, 상가, 오피스텔, 기타 로 나눠서 반환해줘 예로 단지형 다세대면 다세대주택이야String)
                     landType (토지 지목을 찾아서 String)
                     landArea(토지 면적을 찾아서 Double)
