@@ -7,6 +7,7 @@ import lombok.*;
 @AllArgsConstructor
 public class RegisterDto {
     private String lessorName;                   // 임대인 이름
+    private String lessorBirth;                  // 임대인 생년월일
     private String roadName;                     // 도로명 주소
     private String detailAddress;                // 상세 주소
 
@@ -15,6 +16,7 @@ public class RegisterDto {
     private double landArea;
     private String buildingType;                 // 단지형다세대
     private double buildingArea;
+    private double area;
 
     private boolean auctionRecord;               // 경매 기록 여부
     private boolean injuctionRecord;             // 가처분 기록 여부

@@ -14,14 +14,14 @@ public class ReportService {
     private final CrawlingService crawlingService;
     private final OpenApiService openApiService;
 
-    public ReportResponseDto addReport(RegisterDto registerDto, Long legalCode, String jbAddress, Long deposit) {
+    public ReportResponseDto addReport(RegisterDto registerDto, String legalCode, String jbAddress, Long deposit) {
 
 
         Long nowPrice = openApiService.getNowPrice(jbAddress, legalCode, registerDto.getBuildingType(), registerDto.getBuildingArea());
         double salePriceRatio = crawlingService.getSalePriceRatio(jbAddress, registerDto.getBuildingType());
 
-        boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getRoadName());
-        boolean rentalFraud = crawlingService.getRentalFraud(registerDto.getLessorName(), registerDto.getRoadName());
+        boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getLessorBirth());
+        boolean rentalFraud = crawlingService.getRentalFraud(registerDto.getLessorName(), registerDto.getLessorBirth());
 
         int safetyScore = caculateSafetyScore(registerDto, deposit, nowPrice, salePriceRatio);
 

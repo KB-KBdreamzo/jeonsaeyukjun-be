@@ -11,6 +11,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -93,7 +94,7 @@ public class CrawlingService {
             return -1.0;
         }
 
-        public boolean getHighTaxDelinquent(String name, String address) {
+        public boolean getHighTaxDelinquent(String name, String birth) {
             boolean flag = false;
 
             List<String[]> results = new ArrayList<>();
@@ -114,16 +115,17 @@ public class CrawlingService {
                 WebElement resultsTable = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("tbody")));
                 List<WebElement> rows = resultsTable.findElements(By.tagName("tr"));
 
+                // 이름 나이 날짜
                 for (WebElement row : rows) {
                     List<WebElement> columns = row.findElements(By.tagName("td"));
                     if (columns.size() == 1) break;
-                    String[] nameAndAddress = new String[2];
-                    nameAndAddress[0] = columns.get(2).getText();
-                    nameAndAddress[1] = columns.get(6).getText();
-                    results.add(nameAndAddress);
-                }
 
-                if (!results.isEmpty()) flag = true;
+                    int goal = Integer.parseInt(columns.get(3).getText());
+                    int year = Integer.parseInt(columns.get(1).getText());
+                    int age = getAge(birth, year);
+
+                    if(age == goal) return true;
+                }
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -132,7 +134,7 @@ public class CrawlingService {
             return flag;
         }
 
-        public boolean getRentalFraud(String name, String address) {
+        public boolean getRentalFraud(String name, String birth) {
             boolean flag = false;
             List<String[]> results = new ArrayList<>();
 
@@ -151,19 +153,26 @@ public class CrawlingService {
 
                 for (WebElement row : rows) {
                     List<WebElement> columns = row.findElements(By.tagName("td"));
+                    if (columns.size() == 1) break;
 
-                    String[] nameAndAddress = new String[2];
-                    nameAndAddress[0] = columns.get(0).getText();
-                    nameAndAddress[1] = columns.get(2).getText();
-                    results.add(nameAndAddress);
+                    int goal = Integer.parseInt(columns.get(1).getText());
+                    int year = Integer.parseInt(columns.get(9).getText().split("-")[0]);
+                    int age = getAge(birth, year);
+
+                    if(age == goal) return true;
                 }
-
-                if (!results.isEmpty()) flag = true;
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
             return flag;
+        }
+
+        private static int getAge(String birth, int year) {
+            int currentYear = LocalDate.now().getYear();
+            int yearPart = Integer.parseInt(birth.substring(0, 2));
+            String birthYear = (yearPart <= (currentYear % 100)) ? "20" + yearPart : "19" + yearPart;
+            return year - Integer.parseInt(birthYear) - 1;
         }
 
        // 다쓰면 닫아야할 거 같은데 오류남 <- 처리 필요
