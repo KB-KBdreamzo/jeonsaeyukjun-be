@@ -60,7 +60,7 @@ public class OpenAiService {
                     """;
             case "갑구" -> """
                     lessorName 소유자 이름 (마지막 소유권 이전의 소유자 이름을 찾아서 String)\
-                    lessorBirth (위의 소유자에 나와있는 생년월일을 찾아서 String)
+                    lessorBirth (위의 소유자에 나와있는 생년월일을 - 기준 앞부분만 찾아서 String)
                     auctionRecord(등기 목적에서 경매개시결정을 찾아서 있는지 없는지를 찾아서 boolean)
                     injuctionRecord(등기 목적에서 가처분이 있는지 없는지를 찾아서 boolean. 단 경매개시결정 이후에 있다면 없는거야)
                     trustRegistrationRecord (신탁이 있는지 없는지를 찾아서 boolean)

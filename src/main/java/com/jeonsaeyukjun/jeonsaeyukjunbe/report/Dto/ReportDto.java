@@ -15,5 +15,6 @@ public class ReportDto {
     private int safetyScore;
     private String lessorName;
     private int deposit;
+    private boolean isDelete;
     private String createAt;
 }

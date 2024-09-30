@@ -8,5 +8,6 @@ import lombok.Data;
 public class PropertyAddressDto {
     private String roadName;
     private String detailAddress;
+    private String jbAddress;
     private String legalCode;
 }

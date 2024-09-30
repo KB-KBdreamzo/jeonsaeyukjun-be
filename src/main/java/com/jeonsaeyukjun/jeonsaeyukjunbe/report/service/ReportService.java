@@ -17,7 +17,7 @@ public class ReportService {
 
     private final ReportMapper reportMapper;
 
-    public ReportResponseDto generateReport
+    public ReportResponseDto addReport
             (RegisterDto registerDto, String legalCode, String jbAddress, Long deposit) {
 
         Long nowPrice = openApiService.getNowPrice(jbAddress, legalCode, registerDto.getBuildingType(), registerDto.getBuildingArea());
@@ -31,7 +31,7 @@ public class ReportService {
         // registerDto의 도로명 주소 및 상세주소로 주소 테이블에 있/없 확인
         String roadName = registerDto.getRoadName();
         String detailAddress = registerDto.getDetailAddress();
-        PropertyAddressDto propertyAddressDto = new PropertyAddressDto(roadName, detailAddress, legalCode);
+        PropertyAddressDto propertyAddressDto = new PropertyAddressDto(roadName, detailAddress, jbAddress, legalCode);
         propertyAddressService.addPropertyAddressDto(propertyAddressDto);
 
         // 주소랑 연결된 리포트 저장 => 이때 report의 id를 받아오게 지정!
@@ -74,10 +74,40 @@ public class ReportService {
     }
 
     public ReportResponseDto fetchReport(int reportId) {
-        ReportResponseDto reportDto = new ReportResponseDto();
-        return reportDto;
+        ReportDto report = reportMapper.fetchReport(reportId);
+        System.out.println(report.toString()); // 1개 찾는데 왜 결과는 다 저럴까>?
+        BuildingInfoDto buildingInfo = reportMapper.fetchBuildingInfo(reportId);
+        OwnershipInfoDto ownershipInfo = reportMapper.fetchOwnershipInfo(reportId);
+        RightInfoDto rightInfo = reportMapper.fetchRightInfo(reportId);
+        MoneyDto moneyInfo = reportMapper.fetchMoney(reportId);
+        LandlordIncidentDto landlordIncident = reportMapper.fetchLandlordIncident(reportId);
+        PropertyAddressDto propertyAddress = reportMapper.fetchPropertyAddress(report.getRoadName(), report.getDetailAddress());
+        System.out.println(propertyAddress.toString());
+        RegisterDto registerDto = new RegisterDto(
+                report.getLessorName(), "000000", report.getRoadName(), report.getDetailAddress(),
+                buildingInfo.getLandType(), buildingInfo.getLandArea(), buildingInfo.getBuildingType(), buildingInfo.getBuildingArea(), buildingInfo.getArea(),
+                ownershipInfo.isAuctionRecord(), ownershipInfo.isInjuctionRecord(), ownershipInfo.isTrustRegistrationRecord(), ownershipInfo.isRedemptionRecord(), ownershipInfo.isRegistrationRecord(), ownershipInfo.getSeizureCount(), ownershipInfo.getProvisionalSeizureCount(),
+                rightInfo.getPriorityDeposit(), rightInfo.getLeaseholdRegistrationCount(), rightInfo.getMortgageRegistrationCount()
+        );
+
+        return new ReportResponseDto(
+                report.getDeposit(),
+                propertyAddress.getJbAddress(),
+                propertyAddress.getLegalCode(),
+                report.getSafetyScore(),
+                moneyInfo.getNowPrice(),
+                moneyInfo.getSalePriceRatio(),
+                landlordIncident.getHighTaxDelinquent(),
+                landlordIncident.getRentalFraud(),
+                registerDto
+        );
     }
 
-    public void deleteReport(ReportResponseDto reportDto){
+    public void deleteReport(int reportId){
+        // isDelete를 true로 업데이트하고, 반환값 확인
+        int updatedRows = reportMapper.deleteReport(reportId);
+        if (updatedRows == 0) {
+            throw new RuntimeException("리포트 삭제 처리 중 오류가 발생했습니다.");
+        }
     }
 }
