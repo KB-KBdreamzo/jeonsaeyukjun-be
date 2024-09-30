@@ -105,6 +105,9 @@ dependencies {
   // 텍스트 추출
   implementation 'org.apache.pdfbox:pdfbox:2.0.24'
   implementation 'commons-fileupload:commons-fileupload:1.4'
+
+  // AWS S3 의존성 추가
+  implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 }
 
 test {
