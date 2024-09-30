@@ -82,5 +82,4 @@ public class AddJeonsaeFraud {
             System.out.println("체납자 정보 = " + detail);
         }
     }
-
 }

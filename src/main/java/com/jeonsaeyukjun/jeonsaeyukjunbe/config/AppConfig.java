@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
@@ -17,11 +18,15 @@ import javax.sql.DataSource;
 import java.io.IOException;
 
 @Configuration
-@MapperScan(basePackages = {"com.jeonsaeyukjun.jeonsaeyukjunbe.**.mapper.**"})
+@PropertySource("classpath:application.properties")
+@MapperScan(basePackages = "com.jeonsaeyukjun.jeonsaeyukjunbe.map.mapper")
 public class AppConfig {
+
+    @Value("${jdbc.driver}") String driver;
 
     @Value("${db.url}")
     private String jdbcUrl;
+
 
     @Value("${db.username}")
     private String username;
@@ -32,7 +37,8 @@ public class AppConfig {
     @Bean
     public DataSource dataSource() {
         HikariDataSource dataSource= new HikariDataSource();
-        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+//        dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
+        dataSource.setDriverClassName(driver);
         dataSource.setJdbcUrl(jdbcUrl);
         dataSource.setUsername(username);
         dataSource.setPassword(password);
@@ -51,8 +57,8 @@ public class AppConfig {
     public SqlSessionFactoryBean sqlSessionFactory(DataSource dataSource) throws IOException {
         SqlSessionFactoryBean factoryBean = new SqlSessionFactoryBean();
         factoryBean.setDataSource(dataSource);
+        factoryBean.setMapperLocations(applicationContext.getResources("classpath:/mybatis/mappers/AccidentMapper.xml"));
         factoryBean.setConfigLocation(applicationContext.getResource("classpath:/mybatis/mybatis-config.xml"));
-        factoryBean.setMapperLocations(applicationContext.getResources("classpath:/mybatis/mappers/*.xml"));
         return factoryBean;
     }
     @Bean
