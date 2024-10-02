@@ -25,7 +25,7 @@ public class ReportService {
 
         boolean rentalFraud = crawlingService.getRentalFraud(registerDto.getLessorName(), registerDto.getLessorBirth());
         boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getLessorBirth());
-
+        System.out.println(deposit + "~~" + salePriceRatio + " : " + nowPrice + "###" );
         int safetyScore = caculateSafetyScore(registerDto, deposit, nowPrice, salePriceRatio);
 
         // registerDto의 도로명 주소 및 상세주소로 주소 테이블에 있/없 확인
@@ -38,7 +38,7 @@ public class ReportService {
         ReportDto resultReport = new ReportDto();
         resultReport.setUserId(1);  // 사용자는 다르게 넣어야하는거 알지
         resultReport.setRoadName(roadName); resultReport.setDetailAddress(detailAddress); resultReport.setSafetyScore(safetyScore);
-        resultReport.setLessorName(registerDto.getLessorName()); resultReport.setDeposit(resultReport.getDeposit());
+        resultReport.setLessorName(registerDto.getLessorName()); resultReport.setDeposit(deposit);
         reportMapper.addReport(resultReport);
 
         reportMapper.addBuildingInfo(new BuildingInfoDto(resultReport.getReportId(), registerDto.getLandType(),registerDto.getLandArea(), registerDto.getBuildingType(), registerDto.getBuildingArea(), registerDto.getArea()));
@@ -75,14 +75,15 @@ public class ReportService {
 
     public ReportResponseDto fetchReport(int reportId) {
         ReportDto report = reportMapper.fetchReport(reportId);
-        System.out.println(report.toString()); // 1개 찾는데 왜 결과는 다 저럴까>?
+        if (report == null) throw new RuntimeException("존재하지 않는 리포트입니다.");
+
         BuildingInfoDto buildingInfo = reportMapper.fetchBuildingInfo(reportId);
         OwnershipInfoDto ownershipInfo = reportMapper.fetchOwnershipInfo(reportId);
         RightInfoDto rightInfo = reportMapper.fetchRightInfo(reportId);
         MoneyDto moneyInfo = reportMapper.fetchMoney(reportId);
         LandlordIncidentDto landlordIncident = reportMapper.fetchLandlordIncident(reportId);
         PropertyAddressDto propertyAddress = reportMapper.fetchPropertyAddress(report.getRoadName(), report.getDetailAddress());
-        System.out.println(propertyAddress.toString());
+
         RegisterDto registerDto = new RegisterDto(
                 report.getLessorName(), "000000", report.getRoadName(), report.getDetailAddress(),
                 buildingInfo.getLandType(), buildingInfo.getLandArea(), buildingInfo.getBuildingType(), buildingInfo.getBuildingArea(), buildingInfo.getArea(),
@@ -104,7 +105,9 @@ public class ReportService {
     }
 
     public void deleteReport(int reportId){
-        // isDelete를 true로 업데이트하고, 반환값 확인
+        ReportResponseDto report = fetchReport(reportId);
+        if (report == null)  throw new RuntimeException("해당 리포트가 존재하지 않습니다.");
+
         int updatedRows = reportMapper.deleteReport(reportId);
         if (updatedRows == 0) {
             throw new RuntimeException("리포트 삭제 처리 중 오류가 발생했습니다.");
