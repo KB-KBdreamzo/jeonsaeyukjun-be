@@ -37,7 +37,7 @@
 
 
     <select id="fetchReport" resultType="ReportDto">
-        SELECT * FROM report WHERE reportId = #{reportId}
+        SELECT * FROM report WHERE reportId = #{reportId} AND isDelete = false;
     </select>
 
     <select id="fetchBuildingInfo" resultType="BuildingInfoDto">
