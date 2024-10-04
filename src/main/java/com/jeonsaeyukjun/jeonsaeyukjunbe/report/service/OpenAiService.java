@@ -34,7 +34,7 @@ public class OpenAiService {
 
         List<Map<String, String>> messages = List.of(
                 Map.of("role", "system", "content", "You are a helpful assistant."),
-                Map.of("role", "user", "content", createRequest(type) + "\n" + text)
+                Map.of("role", "user", "content", text + "\n" +createRequest(type))
         );
         HttpHeaders headers = createHeaders();
         Map<String, Object> requestBody = createBody(messages);
@@ -47,33 +47,79 @@ public class OpenAiService {
     }
 
     private static String createRequest(String type) {
-        return switch (type){
+        return switch (type) {
             case "표제부" -> """
-                    roadName(도로명주소를 찾아서 String)\
-                    detailAddress (상세주소는 [집합 건물] 옆에 쓰인 내용 전체를 지번주소 제외하고 (예로 #층 #동 #호같은 내용) 찾아서 String
-                    buildingType(건물용도는 건물 내역에 부분 값을 아파트, 단독주택, 다세대주택, 연립주택, 다세대, 상가, 오피스텔, 기타 로 나눠서 반환해줘 예로 단지형 다세대면 다세대주택이야String)
-                    landType (토지 지목을 찾아서 String)
-                    landArea(토지 면적을 찾아서 Double)
-                    buildingArea (1동의 건물의 표시의 건물 내역을 찾고 거기 나온 면적 중 최댓값을 찾아서 Double)
-                    area (용면적 즉 전유부분의건물의표시 부분의 건물 내역에 쓰인 면적을 찾아서 Double)
-                    위의 각 요소들을 찾고 json 형태로 반환해줘, 이때 키값은 왼쪽의 영어이름이고 값은 오른쪽 괄호안의 자료형에 맞게 값을 넣어줘
-                    """;
+                <여기까지가 내용이야>
+                
+                <요구사항>
+                1. roadName(string [도로명주소]를 찾아서 그 밑으로 있는 내용 중 도로명 주소 찾아줘 형식은 시 군 구 로 숫자 이런 형식이야)
+                2. detailAddress(string [집합 건물] 옆에 쓰인 주소 내용 전체를 가져와 시 군 구 번지숫자 및 동과 호수도 찾아줘)
+                3. buildingType(string 건물용도는 건물 내역에 부분 값을 아파트, 단독주택, 다세대주택, 연립주택, 다세대, 상가, 오피스텔, 기타로 나눠서 찾아줘. 예로 단지형 다세대면 다세대주택으로 지정 String)
+                4. landType(string 토지 지목을 찾아줘)
+                5. landArea(double 토지 면적을 찾아줘)
+                6. buildingArea(double 1동의 건물의 표시의 건물 내역을 찾은뒤 그 면적 중 최댓값을 찾아줘)
+                7. area(double 용면적, 즉 전유부분의 건물의 표시 부분의 건물 내역에 쓰인 면적을 찾아줘)
+                
+                <금지사항>
+                1. 잘못된 값은 넣지 말고 말소된 항목은 제외해줘
+                2. 같은 줄에 띄어쓰기가 있다면 다른 내용이므로 조심해. 다른 줄의 경우엔 같은 내용일 수 있어
+                   예로 서울특별시 강서구 허준로  4층
+                       47  5층 
+                   이라면 도로명주소는 서울특별시 강서구 허준로 47이 하나의 내용인거야
+                3. roadname의 경우 꼭 뒤의 숫자형태도 포함해줘
+                4. detailAddress의 경우 시 군 구 지번 #몇동 몇호 형태로 반환해, 동 앞에는 #문자를 붙이고 동과 호 앞에 '제'라는 글자가 있다면 제거하고 층수도 빼 
+                5. 출력은 json 형식이며, 괄호안의 값이 키값이고 자료형 및 반환할 값이야.
+                
+                <요구사항>에 맞춰서 내용을 추출해줘. <금지사항>을 꼭 주의해서 지켜줘
+                출력은 꼭 json형식으로 반환해줘. 한 줄 한 줄 천천히 읽고 생각하면서 답변해
+                """;
             case "갑구" -> """
-                    lessorName 소유자 이름 (마지막 소유권 이전의 소유자 이름을 찾아서 String)\
-                    lessorBirth (위의 소유자에 나와있는 생년월일을 - 기준 앞부분만 찾아서 String)
-                    auctionRecord(등기 목적에서 경매개시결정을 찾아서 있는지 없는지를 찾아서 boolean)
-                    injuctionRecord(등기 목적에서 가처분이 있는지 없는지를 찾아서 boolean. 단 경매개시결정 이후에 있다면 없는거야)
-                    trustRegistrationRecord (신탁이 있는지 없는지를 찾아서 boolean)
-                    redemptionRecord(환매특약의 여부를 찾아서 boolean)
-                    registrationRecord (등기 목적에서 가등기가 있는지 없는지를 찾아서 boolean. 단 경매개시결정 이후에 있다면 없는거야)
-                    seizureCount(등기 목적에서 압류의 횟수를 찾아서 Integer. 말소가 있다면 해당 압류는 없는거야)
-                    provisionalSeizureCount(등기 목적에서 가압류의 횟수를 찾아서 Integer. 말소가 있다면 해당 가압류는 없는거야)\
-                    위의 각 요소들을 찾고 json 형태로 반환해줘, 이때 키값은 왼쪽의 영어이름이고 값은 오른쪽 괄호안의 자료형에 맞게 값을 넣어줘""";
+                <여기까지가 내용이야>
+                
+                <요구사항>
+                1. lessorName(String 소유자 이름을 찾아줘. 단, 마지막 소유권 이전의 소유자를 기준으로 해줘)
+                2. lessorBirth(String 소유자의 생년월일 맨앞 6자리 찾아줘)
+                3. auctionRecord(boolean 경매개시결정이 있는지 여부를 찾아줘)
+                4. injuctionRecord(boolean 가처분이 있는지 여부를 찾아줘)
+                5. trustRegistrationRecord(boolean 신탁이 있는지 여부를 찾아줘)
+                6. redemptionRecord(boolean 환매특약이 있는지 여부를 찾아줘)
+                7. registrationRecord(boolean 가등기가 있는지 여부를 찾아줘.)
+                8. seizureCount(integer 압류 횟수를 찾아줘.)
+                9. provisionalSeizureCount(integer 가압류 횟수를 찾아줘.)
+                
+                <금지사항>
+                1. 잘못된 값은 넣지 말고 말소된 항목은 제외해줘
+                2. 같은 줄에 띄어쓰기가 있다면 다른 내용이야. 다른 줄의 경우엔 같은 내용일 수 있어
+                3. 가처분, 가등기의 경우 경매 개시 결정 이후에 있다면 제외해줘.
+                4. 압류, 가압류의 경우 말소된 건은 빼줘.
+                5. 출력은 json 형식이며, 괄호안의 값이 키값이고 자료형 및 반환할 값이야.
+                
+                <요구사항>에 맞춰서 내용을 추출해줘. <금지사항>을 꼭 주의해서 지켜줘
+                출력은 꼭 json형식으로 반환해줘. 한 줄 한 줄 천천히 읽고 생각하면서 답변해
+                """;
             case "을구" -> """
-                    priorityDeposit (선순위 채권 총액 Long)
-                    mortgageCount(근저당권 설정 내역 부분을 찾아서 Integer, 단 해당하는 설정의 말소가 있다면 세지 말아줘)
-                    leaseholdRegistrationCount(전세권 설정 내역을 찾아서 Integer, 단 해당하는 설정의 말소가 있다면 세지 말아줘)\
-                    위의 각 요소들을 찾고 json 형태로 반환해줘, 이때 키값은 왼쪽의 영어이름이고 값은 오른쪽 괄호안의 자료형에 맞게 값을 넣어줘""";
+                <여기까지가 내용이야>
+
+                <요구사항>
+                1. priorityDeposit(long 선순위 채권 총액을 찾아줘. 말소된 경우 금액도 같이 없어져. 잘 읽어보고 고려해)
+                2. mortgageCount(integer 근저당권 설정 내역을 찾아줘 말소의 경우는 꼭 빼야해. 잘 읽어보고 고려해)
+                3. leaseholdRegistrationCount(integer 전세권 설정 내역을 찾아줘. 잘 읽어보고 고려해)
+                
+                <금지사항>
+                1. 잘못된 값은 넣지 말고 말소된 항목이 있다면, 이전에 있던 항목을 무효하라는 이야기야. 즉 설정을 빼라는 이야기지
+                2. 같은 줄에 띄어쓰기가 있다면 다른 내용이므로 조심해. 다른 줄의 경우엔 같은 내용일 수 있어
+                   예로 5 1번근저당권설정, 2009년2월19일 2009년2월19일
+                         2번근저당권설정 제10785호 해지
+                         등기말소
+                   의 경우에는 1번 근저당권설정, 2번 근저당권설정 등기말소 인거야. 
+                3. 근저당권이전과 전세권 이전은 횟수에 아예 반영하지 마
+                4. 말소의 경우 , 가 있다면 한번에 여러건이 말소될 수 있으니 -2, -3이 될 수도 있으니 잘 분석해
+                5. 출력은 json 형식이며, 괄호안의 값이 키값이고 자료형 및 반환할 값이야.
+                
+                <요구사항>에 맞춰서 내용을 추출해줘. <금지사항>을 꼭 주의해서 지켜줘
+                출력은 꼭 json형식으로 반환해줘. 한 줄 한 줄 천천히 읽고 생각하면서 답변해
+                여기에는 각각을 왜그렇게 판단했는지 이유도 적어봐
+                """;
 
             default -> throw new IllegalStateException("Unexpected value: " + type);
         };
@@ -98,7 +144,7 @@ public class OpenAiService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode rootNode = objectMapper.readTree(responseBody);
         String content = rootNode.path("choices").get(0).path("message").path("content").asText();
-
+        System.out.println(content);
         Matcher matcher = Pattern.compile("```json\\n(.*?)\\n```", Pattern.DOTALL).matcher(content);
         if (matcher.find()) {
             String cleanJson = matcher.group(1).replaceAll("\\n", "").replaceAll("\\\\", "").trim();
