@@ -10,6 +10,7 @@ public class RegisterDto {
     private String lessorBirth;
     private String roadName;
     private String detailAddress;
+    private boolean isIllegalBuilding;
 
     // BuildingInfoDto
     private String landType;

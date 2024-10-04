@@ -59,6 +59,7 @@ public class OpenAiService {
                 5. landArea(double 토지 면적을 찾아줘)
                 6. buildingArea(double 1동의 건물의 표시의 건물 내역을 찾은뒤 그 면적 중 최댓값을 찾아줘)
                 7. area(double 용면적, 즉 전유부분의 건물의 표시 부분의 건물 내역에 쓰인 면적을 찾아줘)
+                8. isIllegalBuilding (boolean 불법건축물 이라는 글자가 있으면 true, 아니면 false)
                 
                 <금지사항>
                 1. 잘못된 값은 넣지 말고 말소된 항목은 제외해줘

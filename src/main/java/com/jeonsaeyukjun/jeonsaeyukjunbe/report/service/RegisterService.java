@@ -33,6 +33,7 @@ public class RegisterService {
                 (String) analysisResult.get("lessorBirth"),
                 (String) analysisResult.get("roadName"),
                 (String) analysisResult.get("detailAddress"),
+                (Boolean) analysisResult.get("isIllegalBuilding"),
                 (String) analysisResult.get("landType"),
                 (Double) analysisResult.get("landArea"),
                 (String) analysisResult.get("buildingType"),

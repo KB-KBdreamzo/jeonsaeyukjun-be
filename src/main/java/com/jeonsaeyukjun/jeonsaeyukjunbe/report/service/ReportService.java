@@ -85,7 +85,7 @@ public class ReportService {
         PropertyAddressDto propertyAddress = reportMapper.fetchPropertyAddress(report.getRoadName(), report.getDetailAddress());
 
         RegisterDto registerDto = new RegisterDto(
-                report.getLessorName(), "000000", report.getRoadName(), report.getDetailAddress(),
+                report.getLessorName(), "000000", report.getRoadName(), report.getDetailAddress(), true,
                 buildingInfo.getLandType(), buildingInfo.getLandArea(), buildingInfo.getBuildingType(), buildingInfo.getBuildingArea(), buildingInfo.getArea(),
                 ownershipInfo.isAuctionRecord(), ownershipInfo.isInjuctionRecord(), ownershipInfo.isTrustRegistrationRecord(), ownershipInfo.isRedemptionRecord(), ownershipInfo.isRegistrationRecord(), ownershipInfo.getSeizureCount(), ownershipInfo.getProvisionalSeizureCount(),
                 rightInfo.getPriorityDeposit(), rightInfo.getLeaseholdRegistrationCount(), rightInfo.getMortgageRegistrationCount()
