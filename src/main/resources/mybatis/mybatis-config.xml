@@ -3,5 +3,12 @@
 <configuration>
     <typeAliases>
         <!--        <typeAlias alias="Dto명" type="파일위치"/>-->
+        <typeAlias alias="ContractDTO" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto"/>
+        <typeAlias alias="SpecialContractDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto"/>
     </typeAliases>
+    <!-- 매퍼 설정 -->
+    <mappers>
+        <!-- 매퍼 클래스나 매퍼 XML 파일 경로 설정 -->
+<!--        <mapper resource="mybatis/mappers/ContractMapper.xml"/>-->
+    </mappers>
 </configuration>
