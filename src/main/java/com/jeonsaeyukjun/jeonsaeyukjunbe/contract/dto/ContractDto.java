@@ -1,10 +1,13 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@Getter @Setter
-public class ContractDTO {
+@Data
+@AllArgsConstructor
+public class ContractDto {
+    private String conditionType;
+
     private String landlordName; // 임대인 이름
     private String tenantName;   // 임차인 이름
     private String address;      // 계약 주소
@@ -65,6 +68,6 @@ public class ContractDTO {
     private int todayMonth;
     private int todayDay;
 
-    public ContractDTO() {}
+    public ContractDto() {}
 
 }
