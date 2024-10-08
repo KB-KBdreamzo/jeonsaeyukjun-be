@@ -16,4 +16,5 @@ public class MypageService {
         List<ReportDto> reports = mypageMapper.getReports(userId);
         return reports;
     }
+
 }

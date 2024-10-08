@@ -3,8 +3,7 @@
 <mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.mypage.mapper.MypageMapper">
 
     <select id="getReports" resultType="ReportDto">
-        SELECT * FROM Report WHERE user_id = #{userId}
+        SELECT * FROM report WHERE user_id = #{userId} and is_delete = false;
     </select>
-
 
 </mapper>
