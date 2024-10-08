@@ -1,8 +1,8 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.report.controller;
 
 import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RegisterDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportResponseDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportRequestDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportResponseDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.report.service.RegisterService;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.report.service.ReportService;
 import lombok.RequiredArgsConstructor;
@@ -28,11 +28,12 @@ public class ReportController {
             Long deposit = reportRequest.getDeposit();
             String legalCode = reportRequest.getLegalCode();
             String jbAddress = reportRequest.getJbAddress();
+            String detailAddress = reportRequest.getDetailAddress();
             RegisterDto registerDto = reportRequest.getRegisterDto();
 
-            ReportResponseDto report = reportService.addReport(registerDto, legalCode, jbAddress, deposit) ;
+            Long reportId = reportService.addReport(registerDto, legalCode, jbAddress, detailAddress, deposit) ;
 
-            return ResponseEntity.ok(report);
+            return ResponseEntity.ok(reportId);
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body(Map.of("message", "서버 내부 오류: " + e.getMessage()));

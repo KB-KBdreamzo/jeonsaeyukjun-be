@@ -17,8 +17,8 @@ public class ReportService {
 
     private final ReportMapper reportMapper;
 
-    public ReportResponseDto addReport
-            (RegisterDto registerDto, String legalCode, String jbAddress, Long deposit) {
+    public Long addReport
+            (RegisterDto registerDto, String legalCode, String jbAddress, String detailAddress, Long deposit) {
 
         Long nowPrice = openApiService.getNowPrice(jbAddress, legalCode, registerDto.getBuildingType(), registerDto.getBuildingArea());
         double salePriceRatio = crawlingService.getSalePriceRatio(jbAddress, registerDto.getBuildingType());
@@ -30,7 +30,6 @@ public class ReportService {
 
         // registerDto의 도로명 주소 및 상세주소로 주소 테이블에 있/없 확인
         String roadName = registerDto.getRoadName();
-        String detailAddress = registerDto.getDetailAddress();
         PropertyAddressDto propertyAddressDto = new PropertyAddressDto(roadName, detailAddress, jbAddress, legalCode);
         propertyAddressService.addPropertyAddressDto(propertyAddressDto);
 
@@ -38,7 +37,7 @@ public class ReportService {
         ReportDto resultReport = new ReportDto();
         resultReport.setUserId(1);  // 사용자는 다르게 넣어야하는거 알지
         resultReport.setRoadName(roadName); resultReport.setDetailAddress(detailAddress); resultReport.setSafetyScore(safetyScore);
-        resultReport.setLessorName(registerDto.getLessorName()); resultReport.setDeposit(deposit);
+        resultReport.setLessorName(registerDto.getLessorName()); resultReport.setLessorBirth(registerDto.getLessorBirth()); resultReport.setDeposit(deposit);
         reportMapper.addReport(resultReport);
 
         reportMapper.addBuildingInfo(new BuildingInfoDto(resultReport.getReportId(), registerDto.getLandType(),registerDto.getLandArea(), registerDto.getBuildingType(), registerDto.getBuildingArea(), registerDto.getArea()));
@@ -47,7 +46,7 @@ public class ReportService {
         reportMapper.addOwnershipInfo(new OwnershipInfoDto(resultReport.getReportId(), registerDto.isAuctionRecord(), registerDto.isInjuctionRecord(), registerDto.isTrustRegistrationRecord(), registerDto.isRedemptionRecord(), registerDto.isRegistrationRecord(), registerDto.getSeizureCount(), registerDto.getProvisionalSeizureCount()));
         reportMapper.addRightInfo(new RightInfoDto(resultReport.getReportId(),  registerDto.getPriorityDeposit(), registerDto.getMortgageCount(), registerDto.getLeaseholdRegistrationCount()));
 
-        return new ReportResponseDto(deposit, jbAddress, legalCode, safetyScore, nowPrice, salePriceRatio, highTaxDelinquent, rentalFraud, registerDto);
+        return (long) resultReport.getReportId();
     }
 
     private static int caculateSafetyScore(RegisterDto registerDto, Long deposit, Long nowPrice, double salePriceRatio) {
@@ -85,7 +84,7 @@ public class ReportService {
         PropertyAddressDto propertyAddress = reportMapper.fetchPropertyAddress(report.getRoadName(), report.getDetailAddress());
 
         RegisterDto registerDto = new RegisterDto(
-                report.getLessorName(), "000000", report.getRoadName(), report.getDetailAddress(), true,
+                report.getLessorName(), report.getLessorBirth(), report.getRoadName(), true,
                 buildingInfo.getLandType(), buildingInfo.getLandArea(), buildingInfo.getBuildingType(), buildingInfo.getBuildingArea(), buildingInfo.getArea(),
                 ownershipInfo.isAuctionRecord(), ownershipInfo.isInjuctionRecord(), ownershipInfo.isTrustRegistrationRecord(), ownershipInfo.isRedemptionRecord(), ownershipInfo.isRegistrationRecord(), ownershipInfo.getSeizureCount(), ownershipInfo.getProvisionalSeizureCount(),
                 rightInfo.getPriorityDeposit(), rightInfo.getLeaseholdRegistrationCount(), rightInfo.getMortgageRegistrationCount()
