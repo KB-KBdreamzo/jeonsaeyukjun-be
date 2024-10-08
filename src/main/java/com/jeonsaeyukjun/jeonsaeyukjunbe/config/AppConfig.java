@@ -31,7 +31,8 @@ public class AppConfig {
     @Value("${db.username}")
     private String username;
 
-    @Value("${db.password}")
+    //본인 비밀번호
+    @Value("")
     private String password;
 
     @Bean
