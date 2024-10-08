@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.report.mapper.ReportMapper">
+
+    <!-- isDelete 필요하려나 솔직히 기본값 생성해뒀는데 -->
+    <insert id="addReport" parameterType="ReportDto" useGeneratedKeys="true" keyProperty="reportId">
+        INSERT INTO Report (userId, roadName, detailAddress, safetyScore, createAt, lessorName, deposit)
+        VALUES (#{userId}, #{roadName}, #{detailAddress}, #{safetyScore}, now(), #{lessorName}, #{deposit})
+    </insert>
+
+    <insert id="addBuildingInfo" parameterType="BuildingInfoDto">
+        INSERT INTO Building_Info ( reportId, landType, landArea, buildingType, buildingArea, area )
+        VALUES ( #{reportId}, #{landType}, #{landArea}, #{buildingType}, #{buildingArea}, #{area} )
+    </insert>
+
+    <insert id="addLandlordIncident" parameterType="LandlordIncidentDto">
+        INSERT INTO Landlord_Incident ( reportId, rentalFraud,  highTaxDelinquent)
+        VALUES ( #{reportId}, #{rentalFraud}, #{highTaxDelinquent} )
+    </insert>
+
+    <insert id="addMoney" parameterType="MoneyDto">
+        INSERT INTO Money ( reportId, salePriceRatio, nowPrice )
+        VALUES ( #{reportId}, #{salePriceRatio}, #{nowPrice} )
+    </insert>
+
+    <insert id="addOwnershipInfo" parameterType="OwnershipInfoDto">
+        INSERT INTO Ownership_Info ( reportId, auctionRecord, registrationRecord, trustRegistrationRecord,
+            redemptionRecord,  injuctionRecord,  seizureCount, provisionalSeizureCount)
+        VALUES ( #{reportId},  #{auctionRecord}, #{registrationRecord}, #{trustRegistrationRecord},
+                   #{redemptionRecord}, #{injuctionRecord}, #{seizureCount},  #{provisionalSeizureCount})
+    </insert>
+
+    <insert id="addRightInfo" parameterType="RightInfoDto">
+        INSERT INTO Right_Info ( reportId, priorityDeposit, mortgageRegistrationCount, leaseholdRegistrationCount)
+        VALUES ( #{reportId}, #{priorityDeposit}, #{mortgageRegistrationCount}, #{leaseholdRegistrationCount})
+    </insert>
+
+
+    <select id="fetchReport" resultType="ReportDto">
+        SELECT * FROM report WHERE reportId = #{reportId} AND isDelete = false;
+    </select>
+
+    <select id="fetchBuildingInfo" resultType="BuildingInfoDto">
+        SELECT * FROM building_info WHERE reportId = #{reportId}
+    </select>
+
+    <select id="fetchOwnershipInfo" resultType="OwnershipInfoDto">
+        SELECT * FROM ownership_info WHERE reportId = #{reportId}
+    </select>
+
+    <select id="fetchRightInfo" resultType="RightInfoDto">
+        SELECT * FROM right_info WHERE reportId = #{reportId}
+    </select>
+
+    <select id="fetchMoney" resultType="MoneyDto">
+        SELECT * FROM money WHERE reportId = #{reportId}
+    </select>
+
+    <select id="fetchLandlordIncident" resultType="LandlordIncidentDto">
+        SELECT * FROM landlord_incident WHERE reportId = #{reportId}
+    </select>
+
+    <select id="fetchPropertyAddress" parameterType="map" resultType="PropertyAddressDto">
+        SELECT * FROM property_address WHERE roadName = #{roadName} AND detailAddress=#{detailAddress}
+    </select>
+
+    <update id="deleteReport">
+        UPDATE report SET isDelete = true WHERE reportId = #{reportId}
+    </update>
+
+</mapper>
