@@ -18,7 +18,7 @@ public class ReportService {
     private final ReportMapper reportMapper;
 
     public Long addReport
-            (RegisterDto registerDto, String legalCode, String jbAddress, String detailAddress, Long deposit) {
+            (int userId, RegisterDto registerDto, String legalCode, String jbAddress, String detailAddress, Long deposit) {
 
         Long nowPrice = openApiService.getNowPrice(jbAddress, legalCode, registerDto.getBuildingType(), registerDto.getBuildingArea());
         double salePriceRatio = crawlingService.getSalePriceRatio(jbAddress, registerDto.getBuildingType());
@@ -35,7 +35,7 @@ public class ReportService {
 
         // 주소랑 연결된 리포트 저장 => 이때 report의 id를 받아오게 지정!
         ReportDto resultReport = new ReportDto();
-        resultReport.setUserId(1);  // 사용자는 다르게 넣어야하는거 알지
+        resultReport.setUserId(userId);  // 사용자는 다르게 넣어야하는거 알지
         resultReport.setRoadName(roadName); resultReport.setDetailAddress(detailAddress); resultReport.setSafetyScore(safetyScore);
         resultReport.setLessorName(registerDto.getLessorName()); resultReport.setLessorBirth(registerDto.getLessorBirth()); resultReport.setDeposit(deposit);
         reportMapper.addReport(resultReport);

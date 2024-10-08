@@ -22,8 +22,8 @@ public class ReportController {
     private final RegisterService registerService;
     private final ReportService reportService;
 
-    @PostMapping
-    public ResponseEntity<?> addReport(@RequestBody ReportRequestDto reportRequest) {
+    @PostMapping("/{userId}")
+    public ResponseEntity<?> addReport(@PathVariable int userId, @RequestBody ReportRequestDto reportRequest) {
         try {
             Long deposit = reportRequest.getDeposit();
             String legalCode = reportRequest.getLegalCode();
@@ -31,7 +31,7 @@ public class ReportController {
             String detailAddress = reportRequest.getDetailAddress();
             RegisterDto registerDto = reportRequest.getRegisterDto();
 
-            Long reportId = reportService.addReport(registerDto, legalCode, jbAddress, detailAddress, deposit) ;
+            Long reportId = reportService.addReport(userId, registerDto, legalCode, jbAddress, detailAddress, deposit) ;
 
             return ResponseEntity.ok(reportId);
         } catch (Exception e) {
