@@ -26,16 +26,14 @@ public class WebConfig implements WebMvcConfigurer {
         return resolver;
     }
 
-    // 오류시, 버전맞게 수정
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-
-        //CORS정책오류 해결
         registry.addMapping("/**")
-                .allowedMethods("*")
-                .allowedOriginPatterns("*")
                 .allowedOrigins("http://localhost:5173")
-                .allowedMethods("GET", "POST", "get", "post"); //대소문자 다 써야 함
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true)
+                .maxAge(3600);
     }
 
 }
