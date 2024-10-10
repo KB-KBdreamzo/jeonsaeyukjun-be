@@ -1,6 +1,7 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper;
 
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -16,5 +17,5 @@ public interface ContractMapper {
     void addContract(ContractDto contractDto);
 
     // 특정 조건에 따라 SpecialContractDto 목록을 가져오는 메소드
-    List<SpecialContractDto> fetchSpecialContracts(String conditionType);
+    List<SpecialContractDto> fetchSpecialContracts(OwnershipInfoDto ownershipInfoDto);
 }

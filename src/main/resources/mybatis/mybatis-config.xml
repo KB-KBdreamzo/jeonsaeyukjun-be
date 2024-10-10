@@ -5,6 +5,7 @@
         <!--        <typeAlias alias="Dto명" type="파일위치"/>-->
         <typeAlias alias="ContractDTO" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto"/>
         <typeAlias alias="SpecialContractDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto"/>
+        <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto"/>
     </typeAliases>
     <!-- 매퍼 설정 -->
     <mappers>
