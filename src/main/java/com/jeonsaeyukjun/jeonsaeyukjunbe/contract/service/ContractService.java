@@ -1,9 +1,10 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.service;
 
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.ContractMapper;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto;
-import lombok.RequiredArgsConstructor;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.OwnershipMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.apache.pdfbox.pdmodel.PDDocument; // PDF 문서를 생성하고 수정하기 위한 클래스
@@ -29,6 +30,9 @@ public class ContractService {
     @Autowired
     private final ContractMapper contractMapper;
 
+    @Autowired
+    private OwnershipMapper ownershipMapper;
+
     public void addContractDto(ContractDto contractDto) {
         if (fetchContract(contractDto) == null) {
             contractMapper.addContract(contractDto);
@@ -39,8 +43,8 @@ public class ContractService {
         return contractMapper.fetchContract(contractDto);
     }
 
-    public List<SpecialContractDto> fetchSpecialContract(String conditionType) {
-        return contractMapper.fetchSpecialContracts(conditionType);
+    public List<SpecialContractDto> fetchSpecialContract(OwnershipInfoDto ownershipInfoDto) {
+        return contractMapper.fetchSpecialContracts(ownershipInfoDto);
     }
 
     @Autowired
@@ -50,11 +54,11 @@ public class ContractService {
     }
 
     // 계약서 PDF를 생성하는 메서드
-    public void generatePDF(ContractDto contractDTO, String conditionType) throws IOException {
+    public void generatePDF(ContractDto contractDTO, OwnershipInfoDto ownershipInfoDto) throws IOException {
         try {
             // 데이터베이스에서 조건에 맞는 SpecialContractDto 목록을 가져옴
-            List<SpecialContractDto> specialContracts = fetchSpecialContract(conditionType);
-            System.out.println(specialContracts);
+            List<SpecialContractDto> specialContracts = fetchSpecialContract(ownershipInfoDto);
+            System.out.println("SpecialContracts: " + specialContracts);
 
             //File templateFile = new File("src/main/resources/standard_contract.pdf"); // PDF 템플릿 파일 로드
             File templateFile = new File("C:/Documents/final_project/jeonsaeyukjun-be/src/main/resources/standard_contract.pdf");
@@ -304,6 +308,7 @@ public class ContractService {
         return data;
     }
 
+    // 해당 line 가운데 정렬
     public void drawCenteredTextWithFontSize(PDPageContentStream contentStream, PDPage page, PDDocument document, String line, PDType0Font font, float fontSize, float leading, float startX, float startY) throws IOException {
         // 페이지 너비 가져오기
         float pageWidth = page.getMediaBox().getWidth();
@@ -330,6 +335,7 @@ public class ContractService {
         startY -= leading;
     }
 
+    //
     public void drawTextWithLineBreakIfNeeded(PDPageContentStream contentStream, PDPage page, PDDocument document, String line, PDType0Font font, float fontSize, float maxWidth, float leading, float startX, float startY) throws IOException {
         // 페이지 너비 가져오기
         float pageWidth = page.getMediaBox().getWidth();
@@ -392,4 +398,10 @@ public class ContractService {
         }
     }
 
+    // OwnershipInfo 조회 메소드
+    public OwnershipInfoDto getOwnershipInfo(int reportId) {
+        OwnershipInfoDto ownershipInfoDto = ownershipMapper.getOwnershipInfoByReportId(reportId);
+        System.out.println("OwnershipInfoDto: " + ownershipInfoDto);
+        return ownershipInfoDto;
+    }
 }
