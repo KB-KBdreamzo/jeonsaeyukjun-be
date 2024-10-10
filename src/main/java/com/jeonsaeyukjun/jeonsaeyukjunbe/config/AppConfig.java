@@ -1,5 +1,6 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.config;
 
+import com.jeonsaeyukjun.jeonsaeyukjunbe.agent.service.AgentService;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
@@ -74,5 +75,10 @@ public class AppConfig {
     @Bean
     public RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public AgentService agentService(){
+        return new AgentService();
     }
 }

@@ -53,13 +53,12 @@ public class OpenAiService {
                 
                 <요구사항>
                 1. roadName(string [도로명주소]를 찾아서 그 밑으로 있는 내용 중 도로명 주소 찾아줘 형식은 시 군 구 로 숫자 이런 형식이야)
-                2. detailAddress(string [집합 건물] 옆에 쓰인 주소 내용 전체를 가져와 시 군 구 번지숫자 및 동과 호수도 찾아줘)
-                3. buildingType(string 건물용도는 건물 내역에 부분 값을 아파트, 단독주택, 다세대주택, 연립주택, 다세대, 상가, 오피스텔, 기타로 나눠서 찾아줘. 예로 단지형 다세대면 다세대주택으로 지정 String)
-                4. landType(string 토지 지목을 찾아줘)
-                5. landArea(double 토지 면적을 찾아줘)
-                6. buildingArea(double 1동의 건물의 표시의 건물 내역을 찾은뒤 그 면적 중 최댓값을 찾아줘)
-                7. area(double 용면적, 즉 전유부분의 건물의 표시 부분의 건물 내역에 쓰인 면적을 찾아줘)
-                8. isIllegalBuilding (boolean 불법건축물 이라는 글자가 있으면 true, 아니면 false)
+                2. buildingType(string 건물용도는 건물 내역에 부분 값을 아파트, 단독주택, 다세대주택, 연립주택, 다세대, 상가, 오피스텔, 기타로 나눠서 찾아줘. 예로 단지형 다세대면 다세대주택으로 지정 String)
+                3. landType(string 토지 지목을 찾아줘)
+                4. landArea(double 토지 면적을 찾아줘)
+                5. buildingArea(double 1동의 건물의 표시의 건물 내역을 찾은뒤 그 면적 중 최댓값을 찾아줘)
+                6. area(double 용면적, 즉 전유부분의 건물의 표시 부분의 건물 내역에 쓰인 면적을 찾아줘)
+                7. isIllegalBuilding (boolean 불법건축물 이라는 글자가 있으면 true, 아니면 false)
                 
                 <금지사항>
                 1. 잘못된 값은 넣지 말고 말소된 항목은 제외해줘
@@ -68,7 +67,7 @@ public class OpenAiService {
                        47  5층 
                    이라면 도로명주소는 서울특별시 강서구 허준로 47이 하나의 내용인거야
                 3. roadname의 경우 꼭 뒤의 숫자형태도 포함해줘
-                4. detailAddress의 경우 시 군 구 지번 #몇동 몇호 형태로 반환해, 동 앞에는 #문자를 붙이고 동과 호 앞에 '제'라는 글자가 있다면 제거하고 층수도 빼 
+                4. buildingType의 결과값은 꼭 아파트, 단독주택, 다세대주택, 연립주택, 다세대, 상가, 오피스텔, 기타중 하나여야해
                 5. 출력은 json 형식이며, 괄호안의 값이 키값이고 자료형 및 반환할 값이야.
                 
                 <요구사항>에 맞춰서 내용을 추출해줘. <금지사항>을 꼭 주의해서 지켜줘

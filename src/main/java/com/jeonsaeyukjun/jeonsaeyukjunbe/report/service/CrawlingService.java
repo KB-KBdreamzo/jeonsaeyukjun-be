@@ -79,7 +79,9 @@ public class CrawlingService {
         }
 
         private double extractPriceRatio(String type) {
-            WebElement resultsTable = driver.findElement(By.tagName("tbody"));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebElement resultsTable = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("tbody"))); // tbody 요소가 보일 때까지 대기
+//            WebElement resultsTable = driver.findElement(By.tagName("tbody"));
             List<WebElement> rows = resultsTable.findElements(By.tagName("tr"));
 
             for (WebElement row : rows) {
