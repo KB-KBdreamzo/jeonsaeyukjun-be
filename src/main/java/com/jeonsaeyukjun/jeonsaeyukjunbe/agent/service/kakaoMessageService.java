@@ -23,10 +23,6 @@ public class kakaoMessageService {
     @Value("${kakao.api.key}")
     private String kakaoApiKey;
 
-    @Value("${kakao.api.url}")
-    private String kakaoApiUrl;
-
-
     public String getKakaoToken(String code) {
         String tokenUrl = "https://kauth.kakao.com/oauth/token";
 
