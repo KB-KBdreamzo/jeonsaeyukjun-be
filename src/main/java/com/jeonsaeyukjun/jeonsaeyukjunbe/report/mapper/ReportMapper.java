@@ -4,6 +4,8 @@ import com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 @Mapper
 public interface ReportMapper {
     void addReport(ReportDto reportDto);
@@ -13,13 +15,17 @@ public interface ReportMapper {
     void addMoney(MoneyDto moneyDto);
     void addBuildingInfo(BuildingInfoDto buildingInfoDto);
 
-    ReportDto fetchReport(int reportId);
-    BuildingInfoDto fetchBuildingInfo(int reportId);
-    OwnershipInfoDto fetchOwnershipInfo(int reportId);
-    RightInfoDto fetchRightInfo(int reportId);
-    MoneyDto fetchMoney(int reportId);
-    LandlordIncidentDto fetchLandlordIncident(int reportId);
-    PropertyAddressDto fetchPropertyAddress(@Param("roadName")String roadName,  @Param("detailAddress") String detailAddress);
+    List<ReportDto> fetchReportList(
+            @Param("userId") Long userId,
+            @Param("sortKey") String sortKey,
+            @Param("query") String query,
+            @Param("size") int size,
+            @Param("offset") int offset
+    );
 
-    int deleteReport(int reportId);
+    int fetchTotalReportCount(@Param("userId") Long userId, @Param("query") String query);
+
+    ReportDetailDto fetchReport(@Param("userId") Long userId, @Param("reportId") Long reportId);
+
+    int deleteReport(@Param("userId") Long userId, @Param("reportId") Long reportId);
 }

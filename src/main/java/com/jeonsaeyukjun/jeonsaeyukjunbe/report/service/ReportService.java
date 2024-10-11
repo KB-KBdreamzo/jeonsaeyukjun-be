@@ -5,6 +5,9 @@ import com.jeonsaeyukjun.jeonsaeyukjunbe.report.mapper.ReportMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @Service
@@ -17,15 +20,13 @@ public class ReportService {
 
     private final ReportMapper reportMapper;
 
-    public Long addReport
-            (int userId, RegisterDto registerDto, String legalCode, String jbAddress, String detailAddress, Long deposit) {
+    public Long addReport (int userId, RegisterDto registerDto, String legalCode, String jbAddress, String detailAddress, Long deposit) {
 
         Long nowPrice = openApiService.getNowPrice(jbAddress, legalCode, registerDto.getBuildingType(), registerDto.getBuildingArea());
         double salePriceRatio = crawlingService.getSalePriceRatio(jbAddress, registerDto.getBuildingType());
 
         boolean rentalFraud = crawlingService.getRentalFraud(registerDto.getLessorName(), registerDto.getLessorBirth());
         boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getLessorBirth());
-        System.out.println(deposit + "~~" + salePriceRatio + " : " + nowPrice + "###" );
         int safetyScore = caculateSafetyScore(registerDto, deposit, nowPrice, salePriceRatio);
 
         // registerDto의 도로명 주소 및 상세주소로 주소 테이블에 있/없 확인
@@ -38,8 +39,8 @@ public class ReportService {
         resultReport.setUserId(userId);  // 사용자는 다르게 넣어야하는거 알지
         resultReport.setRoadName(roadName); resultReport.setDetailAddress(detailAddress); resultReport.setSafetyScore(safetyScore);
         resultReport.setLessorName(registerDto.getLessorName()); resultReport.setLessorBirth(registerDto.getLessorBirth()); resultReport.setDeposit(deposit);
-        reportMapper.addReport(resultReport);
 
+        reportMapper.addReport(resultReport);
         reportMapper.addBuildingInfo(new BuildingInfoDto(resultReport.getReportId(), registerDto.getLandType(),registerDto.getLandArea(), registerDto.getBuildingType(), registerDto.getBuildingArea(), registerDto.getArea()));
         reportMapper.addLandlordIncident(new LandlordIncidentDto(resultReport.getReportId(), rentalFraud, highTaxDelinquent));
         reportMapper.addMoney(new MoneyDto(resultReport.getReportId(), salePriceRatio, nowPrice));
@@ -72,42 +73,48 @@ public class ReportService {
         return safetyScore;
     }
 
-    public ReportResponseDto fetchReport(int reportId) {
-        ReportDto report = reportMapper.fetchReport(reportId);
+    public Map<String, Object> fetchReportList(Long userId, String sortKey, String query, int page, int size) {
+        int offset = (page - 1) * size;
+        List<ReportDto> reports = reportMapper.fetchReportList(userId, sortKey, query, size, offset);
+        int totalCount = reportMapper.fetchTotalReportCount(userId, query);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("reports", reports);
+        result.put("totalPages", (int) Math.ceil((double) totalCount / size));
+        return result;
+    }
+
+    public ReportResponseDto fetchReport(Long userId, Long reportId) {
+
+        ReportDetailDto report = reportMapper.fetchReport(userId, reportId);
         if (report == null) throw new RuntimeException("존재하지 않는 리포트입니다.");
 
-        BuildingInfoDto buildingInfo = reportMapper.fetchBuildingInfo(reportId);
-        OwnershipInfoDto ownershipInfo = reportMapper.fetchOwnershipInfo(reportId);
-        RightInfoDto rightInfo = reportMapper.fetchRightInfo(reportId);
-        MoneyDto moneyInfo = reportMapper.fetchMoney(reportId);
-        LandlordIncidentDto landlordIncident = reportMapper.fetchLandlordIncident(reportId);
-        PropertyAddressDto propertyAddress = reportMapper.fetchPropertyAddress(report.getRoadName(), report.getDetailAddress());
 
         RegisterDto registerDto = new RegisterDto(
-                report.getLessorName(), report.getLessorBirth(), report.getRoadName(), true,
-                buildingInfo.getLandType(), buildingInfo.getLandArea(), buildingInfo.getBuildingType(), buildingInfo.getBuildingArea(), buildingInfo.getArea(),
-                ownershipInfo.isAuctionRecord(), ownershipInfo.isInjuctionRecord(), ownershipInfo.isTrustRegistrationRecord(), ownershipInfo.isRedemptionRecord(), ownershipInfo.isRegistrationRecord(), ownershipInfo.getSeizureCount(), ownershipInfo.getProvisionalSeizureCount(),
-                rightInfo.getPriorityDeposit(), rightInfo.getLeaseholdRegistrationCount(), rightInfo.getMortgageRegistrationCount()
+                report.getLessorName(), report.getLessorBirth(), report.getRoadName(), false,
+                report.getLandType(), report.getLandArea(), report.getBuildingType(), report.getBuildingArea(), report.getArea(),
+                report.isAuctionRecord(), report.isInjuctionRecord(), report.isTrustRegistrationRecord(), report.isRedemptionRecord(), report.isRegistrationRecord(), report.getSeizureCount(), report.getProvisionalSeizureCount(),
+                report.getPriorityDeposit(), report.getLeaseholdRegistrationCount(), report.getMortgageRegistrationCount()
         );
 
         return new ReportResponseDto(
                 report.getDeposit(),
-                propertyAddress.getJbAddress(),
-                propertyAddress.getLegalCode(),
+                report.getJbAddress(),
+                report.getLegalCode(),
                 report.getSafetyScore(),
-                moneyInfo.getNowPrice(),
-                moneyInfo.getSalePriceRatio(),
-                landlordIncident.getHighTaxDelinquent(),
-                landlordIncident.getRentalFraud(),
+                report.getNowPrice(),
+                report.getSalePriceRatio(),
+                report.getHighTaxDelinquent(),
+                report.getRentalFraud(),
                 registerDto
         );
     }
 
-    public void deleteReport(int reportId){
-        ReportResponseDto report = fetchReport(reportId);
+    public void deleteReport(Long userId, Long reportId){
+        ReportResponseDto report = fetchReport(userId, reportId);
         if (report == null)  throw new RuntimeException("해당 리포트가 존재하지 않습니다.");
 
-        int updatedRows = reportMapper.deleteReport(reportId);
+        int updatedRows = reportMapper.deleteReport(userId, reportId);
         if (updatedRows == 0) {
             throw new RuntimeException("리포트 삭제 처리 중 오류가 발생했습니다.");
         }

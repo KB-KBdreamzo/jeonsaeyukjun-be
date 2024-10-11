@@ -33,7 +33,7 @@ public class CrawlingService {
 
         public CrawlingService() {
             // 드라이버 맞게 고쳐야함
-            System.setProperty("webdriver.chrome.driver", "/Users/user/chromedriver-mac-arm64/chromedriver");
+            System.setProperty("webdriver.chrome.driver", "/Users/yundabin/Downloads/chromedriver-mac-x64/chromedriver");
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.addArguments("--remote-allow-origins=*");
             chromeOptions.addArguments("--headless");
@@ -81,7 +81,6 @@ public class CrawlingService {
         private double extractPriceRatio(String type) {
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
             WebElement resultsTable = wait.until(ExpectedConditions.visibilityOfElementLocated(By.tagName("tbody"))); // tbody 요소가 보일 때까지 대기
-//            WebElement resultsTable = driver.findElement(By.tagName("tbody"));
             List<WebElement> rows = resultsTable.findElements(By.tagName("tr"));
 
             for (WebElement row : rows) {
@@ -138,8 +137,6 @@ public class CrawlingService {
 
         public boolean getRentalFraud(String name, String birth) {
             boolean flag = false;
-            List<String[]> results = new ArrayList<>();
-
             try {
                 driver.get("https://www.khug.or.kr/jeonse/web/s01/s010321.jsp?cur_page=");
 
@@ -176,6 +173,4 @@ public class CrawlingService {
             String birthYear = (yearPart <= (currentYear % 100)) ? "20" + yearPart : "19" + yearPart;
             return year - Integer.parseInt(birthYear) - 1;
         }
-
-       // 다쓰면 닫아야할 거 같은데 오류남 <- 처리 필요
-    }
+ }
