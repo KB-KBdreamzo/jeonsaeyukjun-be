@@ -43,7 +43,7 @@
         ORDER BY
         <choose>
             <when test="sortKey=='oldest'">createAt ASC</when>
-            <when test="sortKey=='lastest'">createAt DESC</when>
+            <when test="sortKey=='latest'">createAt DESC</when>
         </choose>
         LIMIT #{size} OFFSET #{offset};
     </select>
