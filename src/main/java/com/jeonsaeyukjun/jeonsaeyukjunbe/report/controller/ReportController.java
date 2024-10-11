@@ -41,10 +41,21 @@ public class ReportController {
         }
     }
 
-    @GetMapping("/{reportId}")
-    public ResponseEntity<?> fetchReport(@PathVariable int reportId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<Map<String, Object>> fetchReportList(
+            @PathVariable("userId") Long userId,
+            @RequestParam("sortKey") String sortKey,
+            @RequestParam(value = "query", defaultValue = "") String query,
+            @RequestParam("page") int page,
+            @RequestParam("size") int size) {
+        Map<String, Object> result = reportService.fetchReportList(userId, sortKey, query, page, size);
+        return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/{userId}/{reportId}")
+    public ResponseEntity<?> fetchReport(@PathVariable Long userId, @PathVariable Long reportId) {
         try {
-            ReportResponseDto report = reportService.fetchReport(reportId);
+            ReportResponseDto report = reportService.fetchReport(userId, reportId);
             return ResponseEntity.ok(report);
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
@@ -52,10 +63,11 @@ public class ReportController {
         }
     }
 
-    @DeleteMapping("/{reportId}")
-    public ResponseEntity<?> deleteReport(@PathVariable int reportId) {
+
+    @DeleteMapping("/{userId}/{reportId}")
+    public ResponseEntity<?> deleteReport(@PathVariable Long userId, @PathVariable Long reportId) {
         try {
-            reportService.deleteReport(reportId);
+            reportService.deleteReport(userId, reportId);
             return ResponseEntity.ok(Map.of("message", "리포트가 성공적으로 삭제 처리되었습니다."));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("message", e.getMessage()));

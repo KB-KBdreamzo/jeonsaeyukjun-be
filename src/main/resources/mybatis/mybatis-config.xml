@@ -12,5 +12,6 @@
         <typeAlias alias="MoneyDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.MoneyDto"/>
         <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.OwnershipInfoDto"/>
         <typeAlias alias="RightInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RightInfoDto"/>
+        <typeAlias alias="ReportDetailDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportDetailDto"/>
     </typeAliases>
 </configuration>
