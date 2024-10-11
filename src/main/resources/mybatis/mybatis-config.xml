@@ -2,6 +2,9 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-<!--        <typeAlias alias="Dto명" type="파일위치"/>-->
+        <!--        <typeAlias alias="Dto명" type="파일위치"/>-->
+        <typeAlias alias="ContractDTO" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto"/>
+        <typeAlias alias="SpecialContractDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto"/>
+        <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto"/>
     </typeAliases>
 </configuration>

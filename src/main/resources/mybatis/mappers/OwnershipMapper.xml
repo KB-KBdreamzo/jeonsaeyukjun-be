@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.OwnershipMapper">
+    <resultMap id="OwnershipInfoMap" type="OwnershipInfoDto">
+        <result property="auctionRecord" column="auction_record"/>
+        <result property="registrationRecord" column="registration_record"/>
+        <result property="trustRegistrationRecord" column="trust_registration_record"/>
+        <result property="redemptionRecord" column="redemption_record"/>
+        <result property="injuctionRecord" column="injuction_record"/>
+        <result property="seizureCount" column="seizure_count"/>
+        <result property="provisionalSeizureCount" column="provisional_seizure_count"/>
+    </resultMap>
+
+    <select id="getOwnershipInfoByReportId" resultMap="OwnershipInfoMap">
+        SELECT *
+        FROM Ownership_Info
+        WHERE report_id = #{reportId}
+    </select>
+</mapper>
