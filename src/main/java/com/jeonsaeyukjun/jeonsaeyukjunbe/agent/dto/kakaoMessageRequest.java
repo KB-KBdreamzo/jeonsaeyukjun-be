@@ -1,4 +1,4 @@
-package com.jeonsaeyukjun.jeonsaeyukjunbe.agent.Dto;
+package com.jeonsaeyukjun.jeonsaeyukjunbe.agent.dto;
 
 public class kakaoMessageRequest {
     private String userName;

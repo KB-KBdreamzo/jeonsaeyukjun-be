@@ -1,7 +1,7 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.agent.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.agent.Dto.kakaoMessageRequest;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.agent.dto.kakaoMessageRequest;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.agent.service.kakaoMessageService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
