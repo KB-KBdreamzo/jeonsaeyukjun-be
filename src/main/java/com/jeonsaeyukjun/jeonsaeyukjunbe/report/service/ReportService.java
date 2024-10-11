@@ -27,7 +27,6 @@ public class ReportService {
 
         boolean rentalFraud = crawlingService.getRentalFraud(registerDto.getLessorName(), registerDto.getLessorBirth());
         boolean highTaxDelinquent = crawlingService.getHighTaxDelinquent(registerDto.getLessorName(), registerDto.getLessorBirth());
-        System.out.println(deposit + "~~" + salePriceRatio + " : " + nowPrice + "###" );
         int safetyScore = caculateSafetyScore(registerDto, deposit, nowPrice, salePriceRatio);
 
         // registerDto의 도로명 주소 및 상세주소로 주소 테이블에 있/없 확인
