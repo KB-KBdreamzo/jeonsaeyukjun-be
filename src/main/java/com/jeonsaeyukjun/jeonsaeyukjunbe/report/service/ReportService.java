@@ -92,7 +92,7 @@ public class ReportService {
 
 
         RegisterDto registerDto = new RegisterDto(
-                report.getLessorName(), report.getLessorBirth(), report.getRoadName(), true,
+                report.getLessorName(), report.getLessorBirth(), report.getRoadName(), false,
                 report.getLandType(), report.getLandArea(), report.getBuildingType(), report.getBuildingArea(), report.getArea(),
                 report.isAuctionRecord(), report.isInjuctionRecord(), report.isTrustRegistrationRecord(), report.isRedemptionRecord(), report.isRegistrationRecord(), report.getSeizureCount(), report.getProvisionalSeizureCount(),
                 report.getPriorityDeposit(), report.getLeaseholdRegistrationCount(), report.getMortgageRegistrationCount()
