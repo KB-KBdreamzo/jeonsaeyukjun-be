@@ -29,6 +29,7 @@ public class kakaoMessageController {
     public void getKakaoToken(@RequestParam("code") String code, HttpServletResponse response) {
         try {
             String accessToken = kakaoMsgService.getKakaoToken(code);
+
             String redirectUrl = "http://localhost:5173/agent?accessToken=" + accessToken;
             response.sendRedirect(redirectUrl);
         } catch (Exception e) {
