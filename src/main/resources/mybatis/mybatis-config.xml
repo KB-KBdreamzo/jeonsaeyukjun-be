@@ -12,6 +12,6 @@
         <typeAlias alias="MoneyDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.MoneyDto"/>
         <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.OwnershipInfoDto"/>
         <typeAlias alias="RightInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RightInfoDto"/>
-        <typeAlias alias="KakaoOuathDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.login.dto.KakaoOuathDto"/>
+        <typeAlias alias="UserDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.login.dto.UserDto"/>
     </typeAliases>
 </configuration>

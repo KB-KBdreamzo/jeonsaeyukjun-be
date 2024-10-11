@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.login.mapper.LoginMapper">
+    <insert id="register" parameterType="UserDto" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO users (user_key, username, email, platform_type, profile_img)
+        VALUES (#{userKey}, #{username}, #{email}, #{platformType}, #{profileImg})
+    </insert>
+
+    <select id="findByUserKey" parameterType="string" resultType="UserDto">
+        SELECT user_id AS userId, user_key AS userKey, username, email, platform_type AS platformType, profile_img AS profileImg, create_at AS createAt
+        FROM users
+        WHERE user_key = #{userKey}
+    </select>
+</mapper>

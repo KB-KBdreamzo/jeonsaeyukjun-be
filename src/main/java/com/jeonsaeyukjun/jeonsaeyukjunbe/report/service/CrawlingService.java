@@ -33,7 +33,7 @@ public class CrawlingService {
 
         public CrawlingService() {
             // 드라이버 맞게 고쳐야함
-            System.setProperty("webdriver.chrome.driver", "/Users/kimsiwan/Downloads/chrome-mac-arm64");
+            System.setProperty("webdriver.chrome.driver", "/Users/kimsiwan/Downloads/chromedriver-mac-arm64/chromedriver");
             ChromeOptions chromeOptions = new ChromeOptions();
             chromeOptions.addArguments("--remote-allow-origins=*");
             chromeOptions.addArguments("--headless");
