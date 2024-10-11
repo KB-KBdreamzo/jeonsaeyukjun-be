@@ -34,10 +34,8 @@ public class OpenApiService {
                 JsonNode dataArray = getResponse(connection);
                 for (JsonNode dataObject : dataArray) {
                     String apiAddress = dataObject.get("주소").asText();
-                    System.out.println("******************" + jbAddress + "^^^^" + apiAddress);
                     if (jbAddress.contains(apiAddress)) {
                         JsonNode saleArray = dataObject.get("매매");
-                        System.out.println(saleArray + "$$$$$$$$$$" + buildingArea);
                         for (JsonNode saleObject : saleArray) {
                             double contractArea = saleObject.get("전용면적").asDouble();
                             if (contractArea == buildingArea) {

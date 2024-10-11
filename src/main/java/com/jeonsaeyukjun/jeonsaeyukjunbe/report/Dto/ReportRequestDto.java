@@ -6,6 +6,7 @@ import lombok.Data;
 public class ReportRequestDto {
     private long deposit;
     private String jbAddress;
+    private String detailAddress;
     private String legalCode;
     private RegisterDto registerDto;
 }

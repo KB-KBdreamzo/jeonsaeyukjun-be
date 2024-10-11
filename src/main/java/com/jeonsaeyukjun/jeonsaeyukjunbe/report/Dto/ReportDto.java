@@ -14,6 +14,7 @@ public class ReportDto {
     private String detailAddress;
     private int safetyScore;
     private String lessorName;
+    private String lessorBirth;
     private long deposit;
     private boolean isDelete;
     private String createAt;

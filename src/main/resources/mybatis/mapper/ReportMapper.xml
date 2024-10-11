@@ -2,10 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.report.mapper.ReportMapper">
 
-    <!-- isDelete 필요하려나 솔직히 기본값 생성해뒀는데 -->
     <insert id="addReport" parameterType="ReportDto" useGeneratedKeys="true" keyProperty="reportId">
-        INSERT INTO Report (userId, roadName, detailAddress, safetyScore, createAt, lessorName, deposit)
-        VALUES (#{userId}, #{roadName}, #{detailAddress}, #{safetyScore}, now(), #{lessorName}, #{deposit})
+        INSERT INTO Report (userId, roadName, detailAddress, safetyScore, createAt, lessorName, lessorBirth, deposit)
+        VALUES (#{userId}, #{roadName}, #{detailAddress}, #{safetyScore}, now(), #{lessorName}, #{lessorBirth}, #{deposit})
     </insert>
 
     <insert id="addBuildingInfo" parameterType="BuildingInfoDto">
@@ -35,37 +34,46 @@
         VALUES ( #{reportId}, #{priorityDeposit}, #{mortgageRegistrationCount}, #{leaseholdRegistrationCount})
     </insert>
 
-
-    <select id="fetchReport" resultType="ReportDto">
-        SELECT * FROM report WHERE reportId = #{reportId} AND isDelete = false;
+    <select id="fetchReportList" resultType="ReportDto" parameterType="map">
+        SELECT * FROM report
+        WHERE userId = #{userId} AND isDelete = false
+        <if test="query != null and query != ''">
+            AND (roadName LIKE CONCAT('%', #{query}, '%') OR detailAddress LIKE CONCAT('%', #{query}, '%'))
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortKey=='oldest'">createAt ASC</when>
+            <when test="sortKey=='latest'">createAt DESC</when>
+        </choose>
+        LIMIT #{size} OFFSET #{offset};
     </select>
 
-    <select id="fetchBuildingInfo" resultType="BuildingInfoDto">
-        SELECT * FROM building_info WHERE reportId = #{reportId}
+    <!-- 전체 보고서 개수 조회 -->
+    <select id="fetchTotalReportCount" resultType="int">
+        SELECT COUNT(*) FROM report
+        WHERE userId = #{userId} AND isDelete = false;
+        <if test="query != null and query != ''">
+            AND (roadName LIKE CONCAT('%', #{query}, '%') OR detailAddress LIKE CONCAT('%', #{query}, '%'))
+        </if>
     </select>
 
-    <select id="fetchOwnershipInfo" resultType="OwnershipInfoDto">
-        SELECT * FROM ownership_info WHERE reportId = #{reportId}
-    </select>
-
-    <select id="fetchRightInfo" resultType="RightInfoDto">
-        SELECT * FROM right_info WHERE reportId = #{reportId}
-    </select>
-
-    <select id="fetchMoney" resultType="MoneyDto">
-        SELECT * FROM money WHERE reportId = #{reportId}
-    </select>
-
-    <select id="fetchLandlordIncident" resultType="LandlordIncidentDto">
-        SELECT * FROM landlord_incident WHERE reportId = #{reportId}
-    </select>
-
-    <select id="fetchPropertyAddress" parameterType="map" resultType="PropertyAddressDto">
-        SELECT * FROM property_address WHERE roadName = #{roadName} AND detailAddress=#{detailAddress}
+    <select id="fetchReport" resultType="ReportDetailDto">
+        SELECT
+            r.*, b.*, o.*, ri.*, m.*, l.*, pa.*
+        FROM
+            report r
+                LEFT JOIN Building_info b ON r.reportId = b.reportId
+                LEFT JOIN Ownership_info o ON r.reportId = o.reportId
+                LEFT JOIN Right_info ri ON r.reportId = ri.reportId
+                LEFT JOIN Money m ON r.reportId = m.reportId
+                LEFT JOIN Landlord_incident l ON r.reportId = l.reportId
+                LEFT JOIN Property_Address pa ON r.roadName = pa.roadName AND r.detailAddress = pa.detailAddress
+        WHERE r.userId = #{userId} AND r.reportId = #{reportId} AND isDelete = false;
     </select>
 
     <update id="deleteReport">
-        UPDATE report SET isDelete = true WHERE reportId = #{reportId}
+        UPDATE report SET isDelete = true
+        WHERE userId = #{userId} AND reportId = #{reportId}
     </update>
 
 </mapper>
