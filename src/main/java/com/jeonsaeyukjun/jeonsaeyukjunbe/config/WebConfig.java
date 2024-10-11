@@ -35,7 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedMethods("*")
                 .allowedOriginPatterns("*")
                 .allowedOrigins("http://localhost:5173")
-                .allowedMethods("GET", "POST", "get", "post"); //대소문자 다 써야 함
+                .allowedMethods("GET", "POST", "DELETE", "get", "post", "delete"); //대소문자 다 써야 함
     }
 
 }
