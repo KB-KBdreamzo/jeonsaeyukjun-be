@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.map.mapper.MapMapper">
+
+    <select id="fetchAccidents" resultType="AccidentDto">
+        SELECT region_name, incident_count, incident_amount, incident_rate,latitude, longitude
+        FROM accidents
+    </select>
+
+    <select id="fetchSafetyScores" resultType="SafetyScoreDto">
+        SELECT r.roadName, r.detailAddress, r.safetyScore
+        FROM Report r
+                 JOIN Property_Address p ON r.roadName = p.roadName AND r.detailAddress = p.detailAddress
+        WHERE p.legalCode = #{legalCode}
+    </select>
+
+</mapper>
