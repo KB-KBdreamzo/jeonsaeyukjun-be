@@ -28,9 +28,15 @@ public class AgentService {
         }
     }
 
-    public List<AgentDto> getAgentList(int legalCode) {
-        return agents.stream()
+    public List<AgentDto> getAgentList(int legalCode, int page, int size) {
+        List<AgentDto> filteredAgents = agents.stream()
                 .filter(agent -> agent.getStdg_cd().equals(String.valueOf(legalCode)))
                 .collect(Collectors.toList());
+
+        int start = (page-1) * size;
+        int end = Math.min(start + size, filteredAgents.size());
+        return filteredAgents.subList(start, end);
     }
+
+
 }
