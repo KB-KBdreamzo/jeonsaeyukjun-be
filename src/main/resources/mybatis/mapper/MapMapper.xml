@@ -12,7 +12,7 @@
         SELECT r.roadName, r.detailAddress, r.safetyScore
         FROM Report r
                  JOIN Property_Address p ON r.roadName = p.roadName AND r.detailAddress = p.detailAddress
-        WHERE p.legalCode = #{legalCode}
+        WHERE LEFT(p.legalCode, 5) = LEFT(#{legalCode}, 5)
     </select>
 
 </mapper>
