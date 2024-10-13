@@ -14,5 +14,7 @@
         <typeAlias alias="RightInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RightInfoDto"/>
         <typeAlias alias="UserDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.login.dto.UserDto"/>
         <typeAlias alias="ReportDetailDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportDetailDto"/>
+        <typeAlias alias="AccidentDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.map.dto.AccidentDto"/>
+        <typeAlias alias="SafetyScoreDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.map.dto.SafetyScoreDto"/>
     </typeAliases>
 </configuration>
