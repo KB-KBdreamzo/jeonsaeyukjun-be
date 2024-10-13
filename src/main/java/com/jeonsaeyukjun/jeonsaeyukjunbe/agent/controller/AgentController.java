@@ -16,10 +16,13 @@ public class AgentController {
     private final AgentService agentService;
 
     @GetMapping("/{legalCode}")
-    public ResponseEntity<?> fetchAgentList(@PathVariable int legalCode) {
+    public ResponseEntity<?> fetchAgentList(
+            @PathVariable int legalCode,
+            @RequestParam int page,
+            @RequestParam int size) {
         try {
             // 공인중개사 목록 조회
-            List<AgentDto> agents = agentService.getAgentList(legalCode);
+            List<AgentDto> agents = agentService.getAgentList(legalCode, page, size);
             if (agents.isEmpty()) {
                 return ResponseEntity.notFound().build(); // 404 Not Found
             }
