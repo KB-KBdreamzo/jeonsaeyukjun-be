@@ -13,10 +13,11 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream; // PDF 페이지에 텍스
 import org.apache.pdfbox.pdmodel.font.PDType0Font; // PDF에서 사용할 수 있는 폰트 클래스
 import org.apache.pdfbox.text.PDFTextStripper; // PDF에서 텍스트를 추출하기 위한 클래스
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File; // 파일을 다루기 위한 클래스
 import java.io.IOException; // I/O 예외 처리를 위한 클래스
 import java.nio.file.Files; // 파일 작업을 위한 클래스
-import java.nio.file.Paths; // 파일 경로를 다루기 위한 클래스
 import java.time.LocalDate; // 날짜를 다루기 위한 클래스
 import java.util.HashMap;
 import java.util.Map; // 키-값 쌍으로 데이터를 저장하는 맵 인터페이스
@@ -32,6 +33,9 @@ public class ContractService {
 
     @Autowired
     private OwnershipMapper ownershipMapper;
+
+    @Autowired
+    private S3Service s3Service;
 
     public void addContractDto(ContractDto contractDto) {
         if (fetchContract(contractDto) == null) {
@@ -60,16 +64,19 @@ public class ContractService {
             List<SpecialContractDto> specialContracts = fetchSpecialContract(ownershipInfoDto);
             System.out.println("SpecialContracts: " + specialContracts);
 
-            //File templateFile = new File("src/main/resources/standard_contract.pdf"); // PDF 템플릿 파일 로드
-            File templateFile = new File("C:/Documents/final_project/jeonsaeyukjun-be/src/main/resources/standard_contract.pdf");
+//            File templateFile = new File("src/main/resources/standard_contract.pdf");
+            // 클래스패스에서 리소스 파일을 불러오는 방법
+            ClassLoader classLoader = getClass().getClassLoader();
+            File templateFile = new File(classLoader.getResource("standard_contract.pdf").getFile());
+
             PDDocument frameDocument = PDDocument.load(templateFile); // 표준 계약서를 표현하는 PDDocument 객체 생성
             PDDocument document = new PDDocument(); // 최종 계약서를 표현하는 PDDocument 객체 생성
 
             // 계약서 작성 날짜 삽입
-            LocalDate today = LocalDate.now(); // 현재 날짜 가져오기
-            contractDTO.setTodayYear(today.getYear()); // 연도 설정
-            contractDTO.setTodayMonth(today.getMonthValue()); // 월 설정
-            contractDTO.setTodayDay(today.getDayOfMonth()); // 일 설정
+            LocalDate today = LocalDate.now();
+            contractDTO.setTodayYear(today.getYear());
+            contractDTO.setTodayMonth(today.getMonthValue());
+            contractDTO.setTodayDay(today.getDayOfMonth());
 
             // 텍스트 추출
             PDFTextStripper stripper = new PDFTextStripper(); // PDF에서 텍스트를 추출하기 위한 객체 생성
@@ -116,16 +123,8 @@ public class ContractService {
                     text = newText;
                     System.out.println(text);
                 }
-//                SpecialContractDto contract = specialContracts.get(i);
-//                System.out.println("content: " + contract.getContent());
-//                text += contract.getContent() + "\n "; // 추가 내용 뒤에 줄바꿈
             }
 
-//            for (SpecialContractDto contract : specialContracts) {
-//                // 여기에 원하는 플레이스 홀더를 대체하는 로직 추가
-//                System.out.println("content" + contract.getContent());
-//                text = text.replace("{{specialContract}}", contract.getContent()); // 예: 특정 필드에 대해 플레이스 홀더를 대체
-//            }
             System.out.println("==========================================================================");
 
             // 폰트에 없는 문자 전처리
@@ -150,8 +149,11 @@ public class ContractService {
             Pattern sectionPattern = Pattern.compile("제\\d+조");
 
             PDPage page = null; // 페이지 객체 초기화
-            //PDType0Font font = PDType0Font.load(document, Files.newInputStream(Paths.get("src/main/resources/fonts/NotoSansKR-Regular.ttf"))); // 사용자 정의 폰트 로드
-            PDType0Font font = PDType0Font.load(document, Files.newInputStream(Paths.get("C:/Documents/final_project/jeonsaeyukjun-be/src/main/resources/fonts/NotoSansKR-Regular.ttf"))); // 사용자 정의 폰트 로드
+
+            // ClassLoader를 사용해 리소스 파일 접근
+            File fontFile = new File(classLoader.getResource("fonts/NotoSansKR-Regular.ttf").getFile());
+            PDType0Font font = PDType0Font.load(document, Files.newInputStream(fontFile.toPath()));
+
             // 텍스트를 줄 단위로 PDF에 추가
             for (int i = 0; i < lines.length; i++) {
 
@@ -183,24 +185,8 @@ public class ContractService {
                     // "주택임대차표준계약서" 라인 처리
                     if (line.contains("주택임대차표준계약서")) {
                         drawCenteredTextWithFontSize(contentStream, page, document, "주택임대차표준계약서", font, 20, leading, startX, startY);
-//                        float pageWidth = page.getMediaBox().getWidth(); // 페이지 너비 가져오기
-//                        //float textWidth = PDType0Font.load(document, Files.newInputStream((Paths.get("src/main/resources/fonts/NotoSansKR-Regular.ttf")))).getStringWidth(line) / 1000 * 20; // 텍스트 너비 계산
-//                        float textWidth = PDType0Font.load(document, Files.newInputStream(
-//                                (Paths.get("C:/Documents/final_project/jeonsaeyukjun-be/src/main/resources/fonts/NotoSansKR-Regular.ttf"))
-//                                )).getStringWidth(line) / 1000 * 20; // 텍스트 너비 계산
-//                        float tempX = (pageWidth - textWidth) / 2; // 중앙 정렬을 위한 x 좌표 계산
-//
-//                        contentStream.setFont(font, 20); // 큰 폰트로 설정
-//                        contentStream.newLineAtOffset(tempX, 0); // 텍스트 위치 이동
-//                        contentStream.showText(line); // 텍스트 추가
-//                        contentStream.newLineAtOffset(tempX * (-1), -leading); // 줄 바꿈
-//                        startY -= leading; // Y 좌표 감소
-//                        contentStream.newLineAtOffset(0, -leading); // 줄 바꿈
-//                        startY -= leading; // Y 좌표 감소
-//                        contentStream.setFont(font, 12); // 원래 폰트 크기로 복귀
                     } else {
                         drawTextWithLineBreakIfNeeded(contentStream, page, document, line, font, 12, 520, leading, startX, startY);
-//                        contentStream.showText(line); // 텍스트 추가
                         contentStream.newLineAtOffset(0, -leading); // 줄 바꿈
                         startY -= leading; // Y 좌표 감소
                     }
@@ -213,10 +199,19 @@ public class ContractService {
                 contentStream.close(); // 내용 스트림 종료
             }
 
-            // 새로운 PDF 저장
-            //document.save("src/main/resources/resulted_contract.pdf");
-            document.save("C:/Documents/final_project/jeonsaeyukjun-be/src/main/resources/resulted_contract.pdf");
+            // 메모리에 저장하기 위한 ByteArrayOutputStream 사용
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            document.save(byteArrayOutputStream);  // 메모리에 PDF 저장
             document.close();
+
+            // ByteArrayInputStream을 사용하여 S3에 업로드
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+            String pdfFileName = "contract_" + System.currentTimeMillis() + ".pdf";
+
+            long contentLength = byteArrayOutputStream.size();
+            String fileUrl = s3Service.uploadFileAndSaveToDb(byteArrayInputStream, pdfFileName, contentLength);  // S3 업로드 로직
+            System.out.println("PDF 파일이 S3에 업로드되었습니다: " + fileUrl);
+
         } catch (IOException e) {
             e.printStackTrace(); // 스택 트레이스를 출력하여 자세한 오류 정보 확인
             // 필요시 사용자에게 에러 메시지를 전달하거나 추가 처리를 수행
@@ -361,7 +356,6 @@ public class ContractService {
                 } else {
                     // 너비를 초과한 경우, 현재 줄을 출력하고 새 줄로 시작
                     float tempTextWidth = font.getStringWidth(currentLine.toString()) / 1000 * fontSize;
-//                    float tempX = (pageWidth - tempTextWidth) / 2;
                     contentStream.setFont(font, fontSize);
                     contentStream.newLineAtOffset(0, 0);
                     contentStream.showText(currentLine.toString().trim());
@@ -379,7 +373,6 @@ public class ContractService {
             // 마지막 줄 출력
             if (currentLine.length() > 0) {
                 float tempTextWidth = font.getStringWidth(currentLine.toString()) / 1000 * fontSize;
-//                float tempX = (pageWidth - tempTextWidth) / 2;
                 contentStream.newLineAtOffset(0, 0);
                 contentStream.showText(currentLine.toString().trim());
             }
@@ -391,7 +384,6 @@ public class ContractService {
             // 너비가 450 이하일 경우 그대로 출력
             float tempX = (pageWidth - textWidth) / 2;
             contentStream.setFont(font, fontSize);
-//            contentStream.newLineAtOffset(startX, 0); // 중앙 정렬
             contentStream.showText(line); // 텍스트 출력
             contentStream.newLineAtOffset(0, -leading); // 줄바꿈
             startY -= leading; // Y 좌표 이동

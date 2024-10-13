@@ -8,7 +8,7 @@
         SELECT
         sc.conditionType AS conditionType,
         sc.content
-        FROM special_contract sc
+        FROM Special_Contract sc
         JOIN Ownership_Info oi ON oi.report_id = #{reportId}  <!-- report_id를 기준으로 조인 -->
         WHERE (
         (oi.auction_record = true AND sc.conditionType = 'auction_record') OR

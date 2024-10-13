@@ -1,6 +1,7 @@
 plugins {
   id 'java'
   id 'war'
+  id 'application'
 }
 application {
   mainClass = 'com.jeonsaeyukjun.jeonsaeyukjunbe.report.crawling.AddHighTaxCompare'
@@ -39,6 +40,10 @@ dependencies {
   //로깅을 위해 logback & slf4j -> 바꿔도 됨
   implementation 'ch.qos.logback:logback-classic:1.4.1'
   implementation 'org.slf4j:slf4j-api:2.0.3'
+
+  // Log4j 2 의존성 추가
+  implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+  implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
 
   // xml내 한글 처리
   implementation 'xerces:xercesImpl:2.12.2'

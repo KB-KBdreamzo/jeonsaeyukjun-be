@@ -1,4 +1,4 @@
-package com.jeonsaeyukjun.jeonsaeyukjunbe.S3.service;
+package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.service;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,12 +28,6 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
-    @Value("${cloud.aws.credentials.access-key}")
-    private String accessKey;
-
-    @Value("${cloud.aws.credentials.secret-key}")
-    private String secretKey;
-
     private final FileMapper fileMapper;
     private final AmazonS3 amazonS3;
 
@@ -42,15 +37,15 @@ public class S3Service {
         this.fileMapper = fileMapper;
     }
 
-    public String uploadFileAndSaveToDb(MultipartFile file){
+    public String uploadFileAndSaveToDb(ByteArrayInputStream inputStream, String fileName, long contentLength){
         // 랜덤 UID 생성 후 파일 이름 지정
-        String contractName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        String contractName = UUID.randomUUID() + "_" + fileName;
         log.info("PDF 이름 key: " + contractName);
 
         // 파일의 메타데이터 설정
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
-        metadata.setContentLength(file.getSize());
+        metadata.setContentType("application/pdf");
+        metadata.setContentLength(contentLength);
 
         try {
 
@@ -60,7 +55,7 @@ public class S3Service {
             }
 
             // 파일 S3에 저장
-            PutObjectRequest request = new PutObjectRequest(bucket, contractName, file.getInputStream(), metadata);
+            PutObjectRequest request = new PutObjectRequest(bucket, contractName, inputStream, metadata);
             amazonS3.putObject(request);
 
             // 임의로 Id 값 고정
@@ -83,8 +78,6 @@ public class S3Service {
         } catch (SdkClientException e) {
             log.error(e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
