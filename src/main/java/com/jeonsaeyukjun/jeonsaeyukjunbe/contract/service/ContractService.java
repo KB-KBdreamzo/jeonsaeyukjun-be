@@ -25,7 +25,6 @@ import java.util.regex.Pattern; // 정규 표현식을 다루기 위한 클래�
 import java.util.List;
 
 @Service
-//@RequiredArgsConstructor
 public class ContractService {
 
     @Autowired
@@ -51,8 +50,8 @@ public class ContractService {
         return contractMapper.fetchSpecialContracts(ownershipInfoDto);
     }
 
+
     @Autowired
-    // 생성자: ContractMapper를 주입받아 초기화
     public ContractService(ContractMapper contractMapper) {
         this.contractMapper = contractMapper;
     }
@@ -60,11 +59,13 @@ public class ContractService {
     // 계약서 PDF를 생성하는 메서드
     public void generatePDF(ContractDto contractDTO, OwnershipInfoDto ownershipInfoDto) throws IOException {
         try {
-            // 데이터베이스에서 조건에 맞는 SpecialContractDto 목록을 가져옴
-            List<SpecialContractDto> specialContracts = fetchSpecialContract(ownershipInfoDto);
-            System.out.println("SpecialContracts: " + specialContracts);
+            List<SpecialContractDto> specialContracts = null;
 
-//            File templateFile = new File("src/main/resources/standard_contract.pdf");
+            // OwnershipInfoDto가 null이 아니면 SpecialContract를 가져옴
+            if (ownershipInfoDto != null) {
+                specialContracts = fetchSpecialContract(ownershipInfoDto);
+                System.out.println("SpecialContracts: " + specialContracts);
+            }
             // 클래스패스에서 리소스 파일을 불러오는 방법
             ClassLoader classLoader = getClass().getClassLoader();
             File templateFile = new File(classLoader.getResource("standard_contract.pdf").getFile());
@@ -94,35 +95,42 @@ public class ContractService {
 
             // MySQL 데이터 삽입 (예: 특정 플레이스 홀더에 데이터 추가)
             System.out.println("==========================================================================");
-            // 첫 번째 플레이스홀더 대체
-            text = text.replace("{{specialContract}}", "- " + specialContracts.get(0).getContent() + "\n"); // 첫 번째 계약 내용 대체
 
-            // 두 번째 줄부터는 기존 내용 뒤에 추가
-            for (int i = 1; i < specialContracts.size(); i++) {
-                int index = text.indexOf(specialContracts.get(i - 1).getContent());
+            if(specialContracts == null) {
+                text = text.replace("{{specialContract}}", " "); // 첫 번째 계약 내용 대체
+            }
+            else if (specialContracts != null && !specialContracts.isEmpty()){
+                // 첫 번째 플레이스홀더 대체
+                text = text.replace("{{specialContract}}", "- " + specialContracts.get(0).getContent() + "\n"); // 첫 번째 계약 내용 대체
 
-                if (index != -1) { // 내용이 존재하는 경우
-                    // 두 번째 계약 내용의 끝 인덱스 계산
-                    int endIndex = index + specialContracts.get(i - 1).getContent().length();
+                // 두 번째 줄부터는 기존 내용 뒤에 추가
+                for (int i = 1; i < specialContracts.size(); i++) {
+                    int index = text.indexOf(specialContracts.get(i - 1).getContent());
 
-                    // 두 번째 계약 내용 이전과 이후의 문자열 분리
-                    String before = text.substring(0, endIndex); // 두 번째 계약 내용까지
-                    String after = text.substring(endIndex); // 그 다음의 내용
-                    System.out.println(before);
-                    System.out.println();
-                    System.out.println(after);
+                    if (index != -1) { // 내용이 존재하는 경우
+                        // 두 번째 계약 내용의 끝 인덱스 계산
+                        int endIndex = index + specialContracts.get(i - 1).getContent().length();
 
-                    // 원하는 내용 추가
-                    SpecialContractDto contract = specialContracts.get(i);
-                    System.out.println("content: " + contract.getContent());
-                    //String additionalContent = contract.getContent() + "\n "; // 추가할 내용
-                    String newText = before + "\n" + "- " + contract.getContent() + "\n" + after; // 두 번째 계약 내용 뒤에 추가
-                    System.out.println(newText);
+                        // 두 번째 계약 내용 이전과 이후의 문자열 분리
+                        String before = text.substring(0, endIndex); // 두 번째 계약 내용까지
+                        String after = text.substring(endIndex); // 그 다음의 내용
+                        System.out.println(before);
+                        System.out.println();
+                        System.out.println(after);
 
-                    // text를 새로운 내용으로 업데이트
-                    text = newText;
-                    System.out.println(text);
+                        // 원하는 내용 추가
+                        SpecialContractDto contract = specialContracts.get(i);
+                        System.out.println("content: " + contract.getContent());
+                        //String additionalContent = contract.getContent() + "\n "; // 추가할 내용
+                        String newText = before + "\n" + "- " + contract.getContent() + "\n" + after; // 두 번째 계약 내용 뒤에 추가
+                        System.out.println(newText);
+
+                        // text를 새로운 내용으로 업데이트
+                        text = newText;
+                        System.out.println(text);
+                    }
                 }
+
             }
 
             System.out.println("==========================================================================");
@@ -206,10 +214,11 @@ public class ContractService {
 
             // ByteArrayInputStream을 사용하여 S3에 업로드
             ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-            String pdfFileName = "contract_" + System.currentTimeMillis() + ".pdf";
-
+            String pdfFileName = System.currentTimeMillis() + ".pdf";
             long contentLength = byteArrayOutputStream.size();
-            String fileUrl = s3Service.uploadFileAndSaveToDb(byteArrayInputStream, pdfFileName, contentLength);  // S3 업로드 로직
+
+            Integer reportId = (ownershipInfoDto != null) ? ownershipInfoDto.getReportId() : null;
+            String fileUrl = s3Service.uploadFileAndSaveToDb(byteArrayInputStream, pdfFileName, contentLength, reportId);
             System.out.println("PDF 파일이 S3에 업로드되었습니다: " + fileUrl);
 
         } catch (IOException e) {

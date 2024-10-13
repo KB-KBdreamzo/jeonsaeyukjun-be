@@ -4,20 +4,18 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.S3.Dto.FileDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.S3.mapper.FileMapper;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.FileDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.FileMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.UUID;
 
@@ -37,7 +35,7 @@ public class S3Service {
         this.fileMapper = fileMapper;
     }
 
-    public String uploadFileAndSaveToDb(ByteArrayInputStream inputStream, String fileName, long contentLength){
+    public String uploadFileAndSaveToDb(ByteArrayInputStream inputStream, String fileName, long contentLength, Integer reportId){
         // 랜덤 UID 생성 후 파일 이름 지정
         String contractName = UUID.randomUUID() + "_" + fileName;
         log.info("PDF 이름 key: " + contractName);
@@ -60,7 +58,6 @@ public class S3Service {
 
             // 임의로 Id 값 고정
             int userId = 1;
-            int reportId = 1;
 
             // 파일명 MySQL에 저장
             FileDto fileDto = new FileDto();
@@ -68,11 +65,15 @@ public class S3Service {
             String updateUrl = fileDto.updateContractUrl(fileDto.getContractUrl(contractName));
             fileDto.setContractUrl(updateUrl);
             fileDto.setUserId(userId);
-            fileDto.setReportId(reportId);
+
+            // reportId가 없으면 NULL로 처리
+            if (reportId == null) {
+                fileDto.setReportId(reportId); // reportId가 있을 경우 설정
+            } else {
+                fileDto.setReportId(null); // reportId가 없으면 NULL 설정
+            }
 
             fileMapper.insertContract(fileDto);
-
-
             return contractName;
 
         } catch (SdkClientException e) {

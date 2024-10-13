@@ -1,11 +1,11 @@
-package com.jeonsaeyukjun.jeonsaeyukjunbe.S3.Dto;
+package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto;
 
 import org.springframework.beans.factory.annotation.Value;
 
 public class FileDto {
     private int contractId;
     private int userId;
-    private int reportId;
+    private Integer reportId;
     private String contractName;
     private String contractUrl;
 
@@ -31,11 +31,11 @@ public class FileDto {
         this.userId = userId;
     }
 
-    public int getReportId() {
+    public Integer getReportId() {
         return reportId;
     }
 
-    public void setReportId(int reportId) {
+    public void setReportId(Integer reportId) {
         this.reportId = reportId;
     }
 

@@ -17,5 +17,13 @@ public class OwnershipInfoDto {
     private Integer seizureCount;
     private Integer provisionalSeizureCount;
 
-    // Getters and Setters
+
+    public Integer getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(Integer reportId) {
+        this.reportId = reportId;
+    }
+
 }

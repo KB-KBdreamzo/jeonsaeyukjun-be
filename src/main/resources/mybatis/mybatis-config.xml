@@ -6,5 +6,6 @@
         <typeAlias alias="ContractDTO" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto"/>
         <typeAlias alias="SpecialContractDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto"/>
         <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto"/>
+        <typeAlias alias="FileDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.FileDto"/>
     </typeAliases>
 </configuration>

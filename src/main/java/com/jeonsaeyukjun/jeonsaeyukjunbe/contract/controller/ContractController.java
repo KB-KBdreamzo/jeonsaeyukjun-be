@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController // Restful API를 제공하는 컨트롤러임을 나타냄
-@RequestMapping("/contract") // 기본 URL 경로를 설정함
+@RestController
+@RequestMapping("/api/contract")
 public class ContractController {
 
     @Autowired
@@ -27,12 +27,14 @@ public class ContractController {
     @PostMapping("/generate")
     public ResponseEntity<String> generateContract(@RequestBody ContractRequestDto contractRequestDto) {
         try {
-            System.out.println(contractRequestDto);
             ContractDto contractDto = contractRequestDto.getContractDto();
             OwnershipInfoDto ownershipInfoDto = contractRequestDto.getOwnershipInfoDto();
-            System.out.println(contractDto);
-            System.out.println(ownershipInfoDto);
-            System.out.println("====================================================");
+
+            if (ownershipInfoDto == null) {
+                System.out.println("OwnershipInfoDto가 null이므로 관련 데이터 없이 PDF를 생성합니다.");
+            } else {
+                System.out.println("OwnershipInfoDto: " + ownershipInfoDto);
+            }
 
             // 서비스 계층으로 ContractDto와 OwnershipInfoDto를 전달하여 로직 처리
             contractService.generatePDF(contractDto, ownershipInfoDto);
@@ -50,6 +52,7 @@ public class ContractController {
         System.out.println("reportId: " + reportId);
         OwnershipInfoDto ownershipInfo = contractService.getOwnershipInfo(reportId);
         System.out.println("OwnershipInfo from Controller: " + ownershipInfo);
+
         if (ownershipInfo != null) {
             return ResponseEntity.ok(ownershipInfo);
         } else {

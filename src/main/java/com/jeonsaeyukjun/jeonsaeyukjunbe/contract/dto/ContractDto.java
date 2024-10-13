@@ -69,6 +69,7 @@ public class ContractDto {
     private int todayMonth;
     private int todayDay;
 
-    public ContractDto() {}
-
+    public ContractDto() {
+        // 기본 생성자
+    }
 }

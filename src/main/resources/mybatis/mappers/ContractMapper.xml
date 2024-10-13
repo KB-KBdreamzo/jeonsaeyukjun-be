@@ -18,9 +18,4 @@
         (oi.injuction_record = true AND sc.conditionType = 'injuction_record')
         )
     </select>
-
-
-<!--    <select id="fetchSpecialContracts" resultType="SpecialContractDto">-->
-<!--        SELECT * FROM special_contract WHERE conditionType = #{conditionType}-->
-<!--    </select>-->
 </mapper>
