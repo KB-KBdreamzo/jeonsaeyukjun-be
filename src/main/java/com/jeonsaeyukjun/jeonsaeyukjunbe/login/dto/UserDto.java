@@ -6,13 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import javax.annotation.Nullable;
+import java.sql.Timestamp;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
+    @Nullable // null 이어도 괜찮다
+    private String token;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private int userId;
     private String userKey;
@@ -21,5 +24,5 @@ public class UserDto {
     private String platformType;
     private String profileImg;
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private LocalDateTime createAt;
+    private Timestamp createAt;
 }
