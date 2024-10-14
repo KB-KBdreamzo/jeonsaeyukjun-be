@@ -2,7 +2,6 @@ package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -70,6 +69,5 @@ public class ContractDto {
     private int todayDay;
 
     public ContractDto() {
-        // 기본 생성자
     }
 }

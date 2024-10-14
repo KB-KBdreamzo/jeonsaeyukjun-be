@@ -10,6 +10,4 @@ import lombok.NoArgsConstructor;
 public class ContractRequestDto {
     private ContractDto contractDto;
     private OwnershipInfoDto ownershipInfoDto;
-
-    // Getters and Setters
 }
