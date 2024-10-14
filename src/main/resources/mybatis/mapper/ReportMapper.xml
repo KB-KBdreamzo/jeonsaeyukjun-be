@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.report.mapper.ReportMapper">
+
+    <insert id="addReport" parameterType="ReportDto" useGeneratedKeys="true" keyProperty="reportId">
+        INSERT INTO Report (userId, roadName, detailAddress, safetyScore, createAt, lessorName, lessorBirth, deposit)
+        VALUES (#{userId}, #{roadName}, #{detailAddress}, #{safetyScore}, now(), #{lessorName}, #{lessorBirth}, #{deposit})
+    </insert>
+
+    <insert id="addBuildingInfo" parameterType="BuildingInfoDto">
+        INSERT INTO Building_Info ( reportId, landType, landArea, buildingType, buildingArea, area )
+        VALUES ( #{reportId}, #{landType}, #{landArea}, #{buildingType}, #{buildingArea}, #{area} )
+    </insert>
+
+    <insert id="addLandlordIncident" parameterType="LandlordIncidentDto">
+        INSERT INTO Landlord_Incident ( reportId, rentalFraud,  highTaxDelinquent)
+        VALUES ( #{reportId}, #{rentalFraud}, #{highTaxDelinquent} )
+    </insert>
+
+    <insert id="addMoney" parameterType="MoneyDto">
+        INSERT INTO Money ( reportId, salePriceRatio, nowPrice )
+        VALUES ( #{reportId}, #{salePriceRatio}, #{nowPrice} )
+    </insert>
+
+    <insert id="addOwnershipInfo" parameterType="OwnershipInfoDto">
+        INSERT INTO Ownership_Info ( reportId, auctionRecord, registrationRecord, trustRegistrationRecord,
+            redemptionRecord,  injuctionRecord,  seizureCount, provisionalSeizureCount)
+        VALUES ( #{reportId},  #{auctionRecord}, #{registrationRecord}, #{trustRegistrationRecord},
+                   #{redemptionRecord}, #{injuctionRecord}, #{seizureCount},  #{provisionalSeizureCount})
+    </insert>
+
+    <insert id="addRightInfo" parameterType="RightInfoDto">
+        INSERT INTO Right_Info ( reportId, priorityDeposit, mortgageRegistrationCount, leaseholdRegistrationCount)
+        VALUES ( #{reportId}, #{priorityDeposit}, #{mortgageRegistrationCount}, #{leaseholdRegistrationCount})
+    </insert>
+
+    <select id="fetchReportList" resultType="ReportDto" parameterType="map">
+        SELECT * FROM report
+        WHERE userId = #{userId} AND isDelete = false
+        <if test="query != null and query != ''">
+            AND (roadName LIKE CONCAT('%', #{query}, '%') OR detailAddress LIKE CONCAT('%', #{query}, '%'))
+        </if>
+        ORDER BY
+        <choose>
+            <when test="sortKey=='oldest'">createAt ASC</when>
+            <when test="sortKey=='latest'">createAt DESC</when>
+        </choose>
+        LIMIT #{size} OFFSET #{offset};
+    </select>
+
+    <!-- 전체 보고서 개수 조회 -->
+    <select id="fetchTotalReportCount" resultType="int">
+        SELECT COUNT(*) FROM report
+        WHERE userId = #{userId} AND isDelete = false;
+        <if test="query != null and query != ''">
+            AND (roadName LIKE CONCAT('%', #{query}, '%') OR detailAddress LIKE CONCAT('%', #{query}, '%'))
+        </if>
+    </select>
+
+    <select id="fetchReport" resultType="ReportDetailDto">
+        SELECT
+            r.*, b.*, o.*, ri.*, m.*, l.*, pa.*
+        FROM
+            report r
+                LEFT JOIN Building_info b ON r.reportId = b.reportId
+                LEFT JOIN Ownership_info o ON r.reportId = o.reportId
+                LEFT JOIN Right_info ri ON r.reportId = ri.reportId
+                LEFT JOIN Money m ON r.reportId = m.reportId
+                LEFT JOIN Landlord_incident l ON r.reportId = l.reportId
+                LEFT JOIN Property_Address pa ON r.roadName = pa.roadName AND r.detailAddress = pa.detailAddress
+        WHERE r.userId = #{userId} AND r.reportId = #{reportId} AND isDelete = false;
+    </select>
+
+    <update id="deleteReport">
+        UPDATE report SET isDelete = true
+        WHERE userId = #{userId} AND reportId = #{reportId}
+    </update>
+
+</mapper>
