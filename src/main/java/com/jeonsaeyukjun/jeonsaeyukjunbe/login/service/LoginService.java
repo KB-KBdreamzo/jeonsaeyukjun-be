@@ -20,7 +20,7 @@ public class LoginService {
     private final LoginMapper loginMapper;
     private final JwtUtil jwtUtil;
 
-    public String kakaoLogin(UserDto kakaoUser) {
+    public UserDto kakaoLogin(UserDto kakaoUser) {
         UserDto user = loginMapper.findByUserKey(kakaoUser.getUserKey());
 
         if (user == null) {
@@ -32,7 +32,10 @@ public class LoginService {
         authenticateUser(user);
 
         // JWT 생성
-        return jwtUtil.generateToken(String.valueOf(user.getUserId()), user.getProfileImg());
+        String jwt = jwtUtil.generateToken(String.valueOf(user.getUserId()), user.getProfileImg());
+        user.setToken(jwt);
+
+        return user;
     }
 
     public boolean kakaoCheck(UserDto kakaoUser) {

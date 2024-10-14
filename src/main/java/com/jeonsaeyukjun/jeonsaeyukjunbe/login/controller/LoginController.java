@@ -18,8 +18,8 @@ public class LoginController {
     @PostMapping("/kakao")
     public ResponseEntity<?> kakaoLogin(@RequestBody UserDto userinfo) {
         try {
-            String jwt = loginService.kakaoLogin(userinfo);
-            return ResponseEntity.ok(jwt); // JWT 반환
+            UserDto user = loginService.kakaoLogin(userinfo);
+            return ResponseEntity.ok(user); // user(안에 jwt 토큰)
         } catch (Exception e) {
             log.error("Error during kakao login", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("카카오 로그인 처리 중 오류 발생");
