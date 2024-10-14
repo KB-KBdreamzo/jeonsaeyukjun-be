@@ -40,6 +40,10 @@ dependencies {
   implementation 'ch.qos.logback:logback-classic:1.4.1'
   implementation 'org.slf4j:slf4j-api:2.0.3'
 
+  // Log4j 2 의존성 추가
+  implementation 'org.apache.logging.log4j:log4j-core:2.17.2'
+  implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+
   // xml내 한글 처리
   implementation 'xerces:xercesImpl:2.12.2'
 
@@ -84,6 +88,12 @@ dependencies {
   // 텍스트 추출
   implementation 'org.apache.pdfbox:pdfbox:2.0.24'
   implementation 'commons-fileupload:commons-fileupload:1.4'
+
+  // AWS S3 의존성 추가
+  implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+
+  // PDF 처리 라이브러리
+  implementation 'org.apache.pdfbox:pdfbox:2.0.24'
 
   // 스프링 시큐리티
   implementation("org.springframework.security:spring-security-web:5.8.13")

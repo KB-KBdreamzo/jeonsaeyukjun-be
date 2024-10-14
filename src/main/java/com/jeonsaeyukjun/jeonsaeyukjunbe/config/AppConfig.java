@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -24,6 +25,7 @@ import java.io.IOException;
 @Configuration
 @PropertySource("classpath:application.properties")
 @MapperScan(basePackages = {"com.jeonsaeyukjun.jeonsaeyukjunbe.**.mapper.**"})
+@PropertySource("classpath:application.properties")
 @ComponentScan(basePackages = "com.jeonsaeyukjun.jeonsaeyukjunbe")
 public class AppConfig {
 
