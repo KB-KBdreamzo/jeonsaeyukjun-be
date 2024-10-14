@@ -15,7 +15,6 @@
         <typeAlias alias="BuildingInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.BuildingInfoDto"/>
         <typeAlias alias="LandlordIncidentDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.LandlordIncidentDto"/>
         <typeAlias alias="MoneyDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.MoneyDto"/>
-        <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.OwnershipInfoDto"/>
         <typeAlias alias="RightInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.RightInfoDto"/>
         <typeAlias alias="UserDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.login.dto.UserDto"/>
         <typeAlias alias="ReportDetailDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportDetailDto"/>
