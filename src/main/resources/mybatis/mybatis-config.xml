@@ -9,7 +9,6 @@
         <typeAlias alias="ContractDTO" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto"/>
         <typeAlias alias="SpecialContractDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto"/>
         <typeAlias alias="OwnershipInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto"/>
-        <typeAlias alias="FileDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.FileDto"/>
         <typeAlias alias="PropertyAddressDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.PropertyAddressDto"/>
         <typeAlias alias="ReportDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportDto"/>
         <typeAlias alias="BuildingInfoDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.BuildingInfoDto"/>
@@ -20,5 +19,8 @@
         <typeAlias alias="ReportDetailDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.report.Dto.ReportDetailDto"/>
         <typeAlias alias="AccidentDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.map.dto.AccidentDto"/>
         <typeAlias alias="SafetyScoreDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.map.dto.SafetyScoreDto"/>
+        <typeAlias alias="ContractTableDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractTableDto"/>
+        <typeAlias alias="ContractWithReportDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractWithReportDto"/>
+        <typeAlias alias="DeleteContractRequestDto" type="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.DeleteContractRequestDto"/>
     </typeAliases>
 </configuration>
