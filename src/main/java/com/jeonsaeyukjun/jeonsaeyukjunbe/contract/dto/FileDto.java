@@ -1,7 +1,9 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
+@PropertySource("classpath:application.properties")
 public class FileDto {
     private int contractId;
     private int userId;

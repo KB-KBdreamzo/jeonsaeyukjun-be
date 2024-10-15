@@ -1,9 +1,6 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.controller;
 
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractRequestDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.*;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.service.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +24,7 @@ public class ContractController {
     @PostMapping("/generate")
     public ResponseEntity<String> generateContract(@RequestBody ContractRequestDto contractRequestDto) {
         try {
+            int userId = contractRequestDto.getUserId();
             ContractDto contractDto = contractRequestDto.getContractDto();
             OwnershipInfoDto ownershipInfoDto = contractRequestDto.getOwnershipInfoDto();
 
@@ -37,7 +35,7 @@ public class ContractController {
             }
 
             // 서비스 계층으로 ContractDto와 OwnershipInfoDto를 전달하여 로직 처리
-            contractService.generatePDF(contractDto, ownershipInfoDto);
+            contractService.generatePDF(contractDto, ownershipInfoDto, userId);
 
             return ResponseEntity.ok("PDF 생성 완료");
         } catch (Exception e) {
