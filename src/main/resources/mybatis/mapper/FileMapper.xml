@@ -4,10 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.FileMapper">
-
     <!-- Contract 저장 (reportId가 null이면 NULL 삽입) -->
     <insert id="insertContract">
-        INSERT INTO Contract (contract_name, contract_url, user_id, report_id)
+        INSERT INTO Contract (contractName, contractUrl, userId, reportId)
         VALUES (
         #{contractName},
         #{contractUrl},
@@ -23,7 +22,7 @@
 
     <!-- Contract 이름으로 조회 -->
     <select id="findByContractName" resultType="FileDto">
-        SELECT * FROM Contract WHERE contract_name = #{contractName}
+        SELECT * FROM Contract WHERE contractName = #{contractName}
     </select>
 
 </mapper>

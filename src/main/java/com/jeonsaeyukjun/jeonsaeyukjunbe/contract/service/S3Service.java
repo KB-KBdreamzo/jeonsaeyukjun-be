@@ -4,6 +4,7 @@ import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractRequestDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.FileDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.FileMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,8 @@ public class S3Service {
         this.fileMapper = fileMapper;
     }
 
-    public String uploadFileAndSaveToDb(ByteArrayInputStream inputStream, String fileName, long contentLength, Integer reportId){
+    public String uploadFileAndSaveToDb(ByteArrayInputStream inputStream, String fileName, long contentLength, Integer reportId, int userId){
+
         // 랜덤 UID 생성 후 파일 이름 지정
         String contractName = UUID.randomUUID() + "_" + fileName;
         log.info("PDF 이름 key: " + contractName);
@@ -55,9 +57,6 @@ public class S3Service {
             // 파일 S3에 저장
             PutObjectRequest request = new PutObjectRequest(bucket, contractName, inputStream, metadata);
             amazonS3.putObject(request);
-
-            // 임의로 Id 값 고정
-            int userId = 1;
 
             // 파일명 MySQL에 저장
             FileDto fileDto = new FileDto();

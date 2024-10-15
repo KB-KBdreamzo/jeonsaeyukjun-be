@@ -9,13 +9,13 @@
         sc.conditionType AS conditionType,
         sc.content
         FROM Special_Contract sc
-        JOIN Ownership_Info oi ON oi.report_id = #{reportId}  <!-- report_id를 기준으로 조인 -->
+        JOIN Ownership_Info oi ON oi.reportId = #{reportId}  <!-- report_id를 기준으로 조인 -->
         WHERE (
-        (oi.auction_record = true AND sc.conditionType = 'auction_record') OR
-        (oi.registration_record = true AND sc.conditionType = 'registration_record') OR
-        (oi.trust_registration_record = true AND sc.conditionType = 'trust_registration_record') OR
-        (oi.redemption_record = true AND sc.conditionType = 'redemption_record') OR
-        (oi.injuction_record = true AND sc.conditionType = 'injuction_record')
+        (oi.auctionRecord = true AND sc.conditionType = 'auctionRecord') OR
+        (oi.registrationRecord = true AND sc.conditionType = 'registrationRecord') OR
+        (oi.trust_registrationRecord = true AND sc.conditionType = 'trust_registrationRecord') OR
+        (oi.redemptionRecord = true AND sc.conditionType = 'redemptionRecord') OR
+        (oi.injuctionRecord = true AND sc.conditionType = 'injuctionRecord')
         )
     </select>
 </mapper>

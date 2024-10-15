@@ -57,7 +57,7 @@ public class ContractService {
     }
 
     // 계약서 PDF를 생성하는 메서드
-    public void generatePDF(ContractDto contractDTO, OwnershipInfoDto ownershipInfoDto) throws IOException {
+    public void generatePDF(ContractDto contractDTO, OwnershipInfoDto ownershipInfoDto, int userId) throws IOException {
         try {
             List<SpecialContractDto> specialContracts = null;
 
@@ -218,7 +218,7 @@ public class ContractService {
             long contentLength = byteArrayOutputStream.size();
 
             Integer reportId = (ownershipInfoDto != null) ? ownershipInfoDto.getReportId() : null;
-            String fileUrl = s3Service.uploadFileAndSaveToDb(byteArrayInputStream, pdfFileName, contentLength, reportId);
+            String fileUrl = s3Service.uploadFileAndSaveToDb(byteArrayInputStream, pdfFileName, contentLength, reportId, userId);
             System.out.println("PDF 파일이 S3에 업로드되었습니다: " + fileUrl);
 
         } catch (IOException e) {
