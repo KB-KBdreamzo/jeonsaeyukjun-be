@@ -10,4 +10,13 @@ import lombok.NoArgsConstructor;
 public class ContractRequestDto {
     private ContractDto contractDto;
     private OwnershipInfoDto ownershipInfoDto;
+    private int userId;
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
 }
