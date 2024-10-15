@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
@@ -42,5 +43,17 @@ public class LoginController {
                     .body("카카오 로그인 처리 중 오류 발생");
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout( HttpServletRequest request) {
+        try {
+            request.getSession().invalidate();
+            return ResponseEntity.ok("로그아웃 성공");
+        } catch (Exception e) {
+            log.error("Error during logout", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("로그아웃 처리 중 오류 발생");
+        }
+    }
+
 
 }
