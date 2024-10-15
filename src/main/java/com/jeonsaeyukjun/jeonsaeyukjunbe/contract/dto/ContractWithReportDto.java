@@ -1,21 +1,18 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
+import java.sql.Date;
 
-@PropertySource("classpath:application.properties")
-public class FileDto {
+public class ContractWithReportDto {
     private int contractId;
     private int userId;
     private Integer reportId;
     private String contractName;
     private String contractUrl;
+    private Date uploadTime;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
-
-    @Value("${cloud.aws.region.static}")
-    private String region;
+    // Report 관련 필드
+    private String reportAddress;
+    private Long reportDeposit;
 
     public int getContractId() {
         return contractId;
@@ -49,7 +46,7 @@ public class FileDto {
         this.contractName = contractName;
     }
 
-    public String getContractUrl(String contractName) {
+    public String getContractUrl() {
         return contractUrl;
     }
 
@@ -57,8 +54,27 @@ public class FileDto {
         this.contractUrl = contractUrl;
     }
 
-    public String updateContractUrl(String contractUrl) {
-        return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + contractName;
+    public Date getUploadTime() {
+        return uploadTime;
+    }
+
+    public void setUploadTime(Date uploadTime) {
+        this.uploadTime = uploadTime;
+    }
+
+    public String getReportAddress() {
+        return reportAddress;
+    }
+
+    public void setReportAddress(String reportAddress) {
+        this.reportAddress = reportAddress;
+    }
+
+    public Long getReportDeposit() {
+        return reportDeposit;
+    }
+
+    public void setReportDeposit(Long reportDeposit) {
+        this.reportDeposit = reportDeposit;
     }
 }
-

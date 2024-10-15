@@ -1,11 +1,13 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.service;
 
+import com.amazonaws.HttpMethod;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractRequestDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.FileDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractTableDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.FileMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Date;
 import java.util.UUID;
 
 @Slf4j
@@ -27,6 +31,13 @@ public class S3Service {
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${cloud.aws.region.static}")
+    private String region;
+
+    public String generateS3Url(String contractName) {
+        return "https://" + bucket + ".s3." + region + ".amazonaws.com/" + contractName;
+    }
+
     private final FileMapper fileMapper;
     private final AmazonS3 amazonS3;
 
@@ -35,6 +46,7 @@ public class S3Service {
         this.amazonS3 = amazonS3;
         this.fileMapper = fileMapper;
     }
+
 
     public String uploadFileAndSaveToDb(ByteArrayInputStream inputStream, String fileName, long contentLength, Integer reportId, int userId){
 
@@ -59,9 +71,10 @@ public class S3Service {
             amazonS3.putObject(request);
 
             // 파일명 MySQL에 저장
-            FileDto fileDto = new FileDto();
+            ContractTableDto fileDto = new ContractTableDto();
             fileDto.setContractName(contractName);
-            String updateUrl = fileDto.updateContractUrl(fileDto.getContractUrl(contractName));
+
+            String updateUrl = generateS3Url(contractName);
             fileDto.setContractUrl(updateUrl);
             fileDto.setUserId(userId);
 
@@ -81,20 +94,20 @@ public class S3Service {
         }
     }
 
-    public UrlResource downloadFile(String contractName) throws MalformedURLException, FileNotFoundException {
-        // DB에서 파일명 검색 후 S3에서 다운로드
-        FileDto fileDto = fileMapper.findByContractName(contractName);
-        if (fileDto == null) {
-            throw new FileNotFoundException("파일을 찾을 수 없습니다.");
-        }
+    public String generatePresignedUrl(String fileName) {
+        // URL 만료 시간 설정
+        Date expiration = new Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60 * 60; // 1시간
+        expiration.setTime(expTimeMillis);
 
-        // AWS S3 클라이언트를 통해 S3 URL 생성 (AWS SDK 이용)
-        String fileName = fileDto.getContractName();
-        String fileUrl = "https://s3.ap-northeast-2.amazonaws.com/" + bucket + "/" + fileName;
+        // 서명된 URL 요청 생성
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(bucket, fileName)
+                        .withMethod(HttpMethod.GET)
+                        .withExpiration(expiration);
 
-        log.info("파일 URL: {}", fileUrl);
-
-        return new UrlResource(fileUrl);
+        return amazonS3.generatePresignedUrl(generatePresignedUrlRequest).toString();
     }
 
 }

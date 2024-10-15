@@ -21,7 +21,7 @@
     </insert>
 
     <!-- Contract 이름으로 조회 -->
-    <select id="findByContractName" resultType="FileDto">
+    <select id="findByContractName" resultType="ContractTableDto">
         SELECT * FROM Contract WHERE contractName = #{contractName}
     </select>
 

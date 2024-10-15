@@ -1,9 +1,7 @@
 package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.service;
 
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.ContractDto;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.OwnershipInfoDto;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.*;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.ContractMapper;
-import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.SpecialContractDto;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.mapper.OwnershipMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -404,5 +402,15 @@ public class ContractService {
         OwnershipInfoDto ownershipInfoDto = ownershipMapper.getOwnershipInfoByReportId(reportId);
         System.out.println("OwnershipInfoDto: " + ownershipInfoDto);
         return ownershipInfoDto;
+    }
+
+    // 계약서 목록 조회
+    public List<ContractWithReportDto> getContractsByUserId(int userId) {
+        return contractMapper.findAllByUserId(userId);
+    }
+
+    // 계약서 삭제 로직
+    public void deleteContract(int userId, String contractName) {
+        contractMapper.deleteContract(userId, contractName);
     }
 }

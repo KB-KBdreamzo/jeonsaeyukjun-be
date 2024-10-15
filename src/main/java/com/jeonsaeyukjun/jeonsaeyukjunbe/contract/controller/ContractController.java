@@ -2,7 +2,9 @@ package com.jeonsaeyukjun.jeonsaeyukjunbe.contract.controller;
 
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.dto.*;
 import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.service.ContractService;
+import com.jeonsaeyukjun.jeonsaeyukjunbe.contract.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,8 +18,12 @@ public class ContractController {
     private final ContractService contractService;
 
     @Autowired
-    public ContractController(ContractService contractService) {
+    private final S3Service s3Service;
+
+    @Autowired
+    public ContractController(ContractService contractService, S3Service s3Service) {
         this.contractService = contractService;
+        this.s3Service = s3Service;
     }
 
     // 사용자에게서 데이터를 받아 ContractDto 객체 생성
@@ -57,4 +63,33 @@ public class ContractController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // 계약서 목록 조회
+    @GetMapping("/list/{userId}")
+    public ResponseEntity<List<ContractWithReportDto>> getContractsByUserId(@PathVariable int userId) {
+        List<ContractWithReportDto> contracts = contractService.getContractsByUserId(userId);
+        if (contracts.isEmpty()) {
+            return ResponseEntity.noContent().build(); // 데이터가 없으면 No Content 응답
+        } else {
+            return ResponseEntity.ok(contracts); // 계약서 목록 반환
+        }
+    }
+
+    // S3 Presigned URL 생성
+    @GetMapping("/presigned-url/{fileName}")
+    public String getPresignedUrl(@PathVariable String fileName) {
+        return s3Service.generatePresignedUrl(fileName);
+    }
+
+    // 삭제
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteContract(@RequestBody DeleteContractRequestDto request) {
+        try {
+            contractService.deleteContract(request.getUserId(), request.getContractName());
+            return ResponseEntity.ok("계약서가 성공적으로 삭제되었습니다.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("계약서 삭제에 실패했습니다.");
+        }
+    }
+
 }

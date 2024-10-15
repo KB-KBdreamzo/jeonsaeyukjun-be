@@ -18,4 +18,33 @@
         (oi.injuctionRecord = true AND sc.conditionType = 'injuctionRecord')
         )
     </select>
+
+    <!-- 특정 userId에 따른 Contract 리스트 조회 -->
+    <select id="findAllByUserId" resultType="ContractWithReportDto">
+        SELECT
+            c.contractId,
+            c.userId,
+            c.reportId,
+            c.contractName,
+            c.contractUrl,
+            c.uploadTime,
+            CONCAT(r.roadName, ' ', r.detailAddress) AS reportAddress,
+            r.deposit AS reportDeposit
+        FROM
+            Contract c
+                LEFT JOIN
+            Report r
+            ON
+                c.reportId = r.reportId
+        WHERE
+            c.userId = #{userId};
+
+    </select>
+
+    <!-- 계약서 삭제 SQL 쿼리 -->
+    <delete id="deleteContract" parameterType="DeleteContractRequestDto">
+        DELETE FROM Contract
+        WHERE userId = #{userId}
+          AND contractName = #{contractName}
+    </delete>
 </mapper>
